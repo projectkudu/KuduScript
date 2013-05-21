@@ -1,0 +1,44 @@
+{
+  "name": "kuduscript",
+  "author": "Outercurve Foundation",
+  "version": "0.1.4",
+  "description": "Tool for generating deployment scripts for Azure Websites",
+  "tags": [
+    "azure",
+    "deployment"
+  ],
+  "keywords": [
+    "node",
+    "azure",
+    "deployment"
+  ],
+  "main": "./bin/kuduscript.js",
+  "engines": {
+    "node": ">= 0.6.20"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/projectkudu/kuduscript.git"
+  },
+  "homepage": "http://github.com/projectkudu/kuduscript",
+  "bugs": {
+    "url": "http://github.com/projectkudu/kuduscript/issues"
+  },
+  "bin": {
+    "kuduscript": "./bin/kuduscript"
+  },
+  "licenses": [
+    {
+      "type": "Apache",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "readmeFilename": "README.markdown",
+  "dependencies": {
+    "commander": "~1.1.1",
+    "streamline": "~0.4.10"
+  }
+}
