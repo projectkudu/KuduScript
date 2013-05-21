@@ -17,6 +17,7 @@
     "node": ">= 0.6.20"
   },
   "scripts": {
+    "build": "_node -c lib",
     "test": ""
   },
   "repository": {
