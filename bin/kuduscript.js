@@ -82,7 +82,7 @@ log.error = function (msg) {
 function main() {
   commander.version('0.0.1');
 
-  deploymentScript.addDeploymentScriptOptions(commander);
+  addDeploymentScriptOptions(commander);
 
   commander.parse(process.argv);
 
@@ -91,7 +91,7 @@ function main() {
     process.exit(1);
   }
 
-  deploymentScript.deploymentScriptExecute(
+  deploymentScriptExecute(
     '',
     commander,
     log,
