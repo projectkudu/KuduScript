@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build": "_node -c lib",
-    "test": ""
+    "test": "test.cmd"
   },
   "repository": {
     "type": "git",
