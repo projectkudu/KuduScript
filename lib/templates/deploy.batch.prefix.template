@@ -1,4 +1,4 @@
-@echo off
+@if "%SCM_TRACE_LEVEL%" != "4" @echo off
 
 :: ----------------------
 :: KUDU Deployment Script
