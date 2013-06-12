@@ -107,5 +107,4 @@ function main() {
 
 exports.addDeploymentScriptOptions = addDeploymentScriptOptions;
 exports.deploymentScriptExecute = deploymentScriptExecute;
-exports.copyIisNodeWhenServerJsPresent = generator.copyIisNodeWhenServerJsPresent;
 exports.main = main;
