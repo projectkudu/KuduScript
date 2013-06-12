@@ -14,7 +14,7 @@ IF !ERRORLEVEL! NEQ 0 goto error
 
 cd azure-sdk-tools-xplat
 
-git checkout kuduscript
+git checkout dev
 IF !ERRORLEVEL! NEQ 0 goto error
 
 call npm install
