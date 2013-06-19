@@ -1,4 +1,8 @@
 
+:: Post deployment stub
+call %POST_DEPLOYMENT_ACTION%
+IF !ERRORLEVEL! NEQ 0 goto error
+
 goto end
 
 :error

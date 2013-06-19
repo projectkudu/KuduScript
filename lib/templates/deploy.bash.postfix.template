@@ -1,2 +1,6 @@
 
+# Post deployment stub
+$POST_DEPLOYMENT_ACTION
+exitWithMessageOnError "post deployment action failed"
+
 echo "Finished successfully."
