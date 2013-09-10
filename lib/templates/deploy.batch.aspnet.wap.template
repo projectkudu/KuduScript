@@ -6,10 +6,10 @@
 echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages
-IF NOT EXIST "%DEPLOYMENT_SOURCE%\{SolutionDir}\.nuget" (
-    IF /I "{SolutionPath}" NEQ "" (
-      call "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
-    )
+IF /I "{SolutionPath}" NEQ "" (
+  echo "Restoring NuGet packages..."
+  call "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
+  IF !ERRORLEVEL! NEQ 0 goto error
 )
 
 :: 2. Build to the temporary path
