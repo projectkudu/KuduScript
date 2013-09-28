@@ -19,6 +19,11 @@ suite('Kudu Script Smoke Tests', function () {
         runScenario("--basic", done);
     });
 
+    test('Node generated script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        runScenario("--node", done);
+    });
+
     setup(function () {
         // Setting a different test directory per test.
         incrementTestDir();
@@ -28,13 +33,13 @@ suite('Kudu Script Smoke Tests', function () {
 
     teardown(function () {
         // Cleaning up after each test
-        //removePath(baseTestTempDir);
+        removePath(baseTestTempDir);
     });
 });
 
 function incrementTestDir() {
     testDirIndex++;
-    testDir = pathUtil.join(baseTestTempDir, testDirBase + testDirIndex);
+    testDir = pathUtil.join(baseTestTempDir, testDirBase, "project" + testDirIndex);
 }
 
 function runScenario(flags, callback) {
