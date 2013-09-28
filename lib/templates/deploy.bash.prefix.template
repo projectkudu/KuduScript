@@ -27,7 +27,7 @@ exitWithMessageOnError "Missing node.js executable, please install node.js, if a
 # -----
 
 SCRIPT_DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-ARTIFACTS=$SCRIPT_DIR/artifacts
+ARTIFACTS=$SCRIPT_DIR/../artifacts
 KUDU_SYNC_CMD=${KUDU_SYNC_CMD//\"}
 
 if [[ ! -n "$DEPLOYMENT_SOURCE" ]]; then
