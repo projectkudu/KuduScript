@@ -42,6 +42,10 @@ function incrementTestDir() {
     testDir = pathUtil.join(baseTestTempDir, testDirBase, "project" + testDirIndex);
 }
 
+// Scenario:
+// 1. Generate the script using the flags provided.
+// 2. Run the generated script.
+// 3. Make sure script generation and script generated didn't fail execution.
 function runScenario(flags, callback) {
     var command = "node " + pathUtil.join(__dirname, "..", "bin", "kuduscript") + " -y -o \"" + testDir + "\" " + flags;
 
