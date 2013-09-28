@@ -1,6 +1,8 @@
 
 # Post deployment stub
-$POST_DEPLOYMENT_ACTION
+POST_DEPLOYMENT_ACTION=${POST_DEPLOYMENT_ACTION//\"}
+cd "${POST_DEPLOYMENT_ACTION%\\*}"
+"$POST_DEPLOYMENT_ACTION"
 exitWithMessageOnError "post deployment action failed"
 
 echo "Finished successfully."
