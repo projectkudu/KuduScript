@@ -2,6 +2,7 @@
 
 :: ----------------------
 :: KUDU Deployment Script
+:: Version: {Version}
 :: ----------------------
 
 :: Prerequisites
