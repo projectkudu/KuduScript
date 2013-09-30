@@ -14,14 +14,28 @@ var testDir = "";
 
 // Tests Suite
 suite('Kudu Script Smoke Tests', function () {
-    test('Basic generated script runs without a failure', function (done) {
+    test('Basic generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        runScenario("--basic", done);
+        var isBash = false;
+        runScenario("--basic", isBash, done);
     });
 
-    test('Node generated script runs without a failure', function (done) {
+    test('Node generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        runScenario("--node", done);
+        var isBash = false;
+        runScenario("--node", isBash, done);
+    });
+
+    test('Basic generated bash script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var isBash = true;
+        runScenario("--basic", isBash, done);
+    });
+
+    test('Node generated bash script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var isBash = true;
+        runScenario("--node", isBash, done);
     });
 
     setup(function () {
@@ -46,8 +60,12 @@ function incrementTestDir() {
 // 1. Generate the script using the flags provided.
 // 2. Run the generated script.
 // 3. Make sure script generation and script generated didn't fail execution.
-function runScenario(flags, callback) {
+function runScenario(flags, isBash, callback) {
     var command = "node " + pathUtil.join(__dirname, "..", "bin", "kuduscript") + " -y -o \"" + testDir + "\" " + flags;
+
+    if (isBash) {
+        command += " --scriptType bash";
+    }
 
     console.log("command: " + command);
     exec(command,
@@ -64,15 +82,20 @@ function runScenario(flags, callback) {
             if (error) {
                 callback(error);
             } else {
-                testScript(callback);
+                testScript(isBash, callback);
             }
         });
 }
 
-function testScript(callback) {
-    var generatedScriptPath = pathUtil.join(testDir, "deploy.cmd");
+function testScript(isBash, callback) {
+    var generatedScriptPath = pathUtil.join(testDir, "deploy");
+    generatedScriptPath += isBash ? ".sh" : ".cmd";
 
     var command = "\"" + generatedScriptPath + "\"";
+
+    if (isBash) {
+        command = "bash " + command;
+    }
 
     console.log("command: " + command);
     exec(command,
