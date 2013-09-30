@@ -1,6 +1,8 @@
 var commander = require('commander');
 var generator = require('../lib/generator');
 
+var version = require('../package.json').version;
+
 function addDeploymentScriptOptions(command) {
   command
        .usage('[options]')
@@ -80,7 +82,7 @@ log.error = function (msg) {
 };
 
 function main() {
-  commander.version('0.0.1');
+  commander.version(version);
 
   addDeploymentScriptOptions(commander);
 
