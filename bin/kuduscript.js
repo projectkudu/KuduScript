@@ -14,7 +14,7 @@ function addDeploymentScriptOptions(command) {
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
        .option('--basic', 'Create a deployment script for any other website')
-       .option('--console', 'Create a deployment script for .NET console application')
+       .option('--console <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
        .option('-s, --solutionFile [file path]', 'The solution file path (sln)')
        .option('-p, --sitePath [directory path]', 'The path to the site being deployed (default: same as repositoryRoot)')
        .option('-t, --scriptType [batch|bash]', 'The script output type (default: batch)')
@@ -28,7 +28,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP;
+  var projectFile = options.aspWAP || options.console;
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
