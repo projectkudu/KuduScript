@@ -14,13 +14,14 @@ function addDeploymentScriptOptions(command) {
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
        .option('--basic', 'Create a deployment script for any other website')
+       .option('--console', 'Create a deployment script for .NET console application')
        .option('-s, --solutionFile [file path]', 'The solution file path (sln)')
        .option('-p, --sitePath [directory path]', 'The path to the site being deployed (default: same as repositoryRoot)')
        .option('-t, --scriptType [batch|bash]', 'The script output type (default: batch)')
        .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
        .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
        .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-       .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
+       .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
 }
 
 function deploymentScriptExecute(name, options, log, confirm, _) {
@@ -33,7 +34,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.console];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -44,10 +45,10 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspWebSite, --php, --python, --basic or --node');
+    log.help('Please specify one of these flags: --aspWAP, --aspWebSite, --php, --python, --console, --basic or --node');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspWebSite, --php, --python, --basic or --node');
+    throw new Error('Please specify only one of these flags: --aspWAP, --aspWebSite, --php, --python, --console, --basic or --node');
   }
 
   var projectType;
@@ -57,6 +58,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.website;
   } else if (options.node) {
     projectType = generator.ProjectType.node;
+  } else if (options.console) {
+    projectType = generator.ProjectType.console;
   } else {
     projectType = generator.ProjectType.basic;
   }
