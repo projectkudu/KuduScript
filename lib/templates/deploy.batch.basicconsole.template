@@ -6,7 +6,7 @@
 echo Handling Basic Console Application deployment.
 
 :: 1. Copy to the temporary path
-call xcopy /Y /Q /T /E "%DEPLOYMENT_SOURCE%{SitePath}" "%DEPLOYMENT_TEMP%\bin\"
+call xcopy /Y /Q /E "%DEPLOYMENT_SOURCE%{SitePath}" "%DEPLOYMENT_TEMP%\bin\"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. KuduSync
