@@ -5,17 +5,23 @@
 
 echo Handling .NET Console Application deployment.
 
-:: 1. Restore NuGet packages
+:: 1. Setup console worker
+IF DEFINED SETUP_CONSOLE_WORKER_CMD (
+  call "%SETUP_CONSOLE_WORKER_CMD%"
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
+
+:: 2. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (
   call "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
-:: 2. Build to the temporary path
+:: 3. Build to the temporary path
 %MSBUILD_PATH% {MSBuildArguments}
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 3. KuduSync
+:: 4. KuduSync
 call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
 IF !ERRORLEVEL! NEQ 0 goto error
 
