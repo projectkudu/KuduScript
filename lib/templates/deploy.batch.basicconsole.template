@@ -6,12 +6,12 @@
 echo Handling Basic Console Application deployment.
 
 :: 1. Copy to the temporary path
-call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_SOURCE%{SitePath}" -t "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\deployedJob" -n tmpfile -i ".git;.hg;.deployment;deploy.cmd" 2>nul >nul
+call "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%{SitePath}" -t "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\deployedJob" -n tmpfile -i ".git;.hg;.deployment;deploy.cmd" 2>nul >nul
 IF !ERRORLEVEL! NEQ 0 goto error
 del tmpfile
 
 :: 2. KuduSync
-call %KUDU_SYNC_CMD% -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+call "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
