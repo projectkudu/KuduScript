@@ -60,8 +60,6 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.node;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
-  } else if (options.basicConsole) {
-    projectType = generator.ProjectType.basicConsole;
   } else {
     projectType = generator.ProjectType.basic;
   }
