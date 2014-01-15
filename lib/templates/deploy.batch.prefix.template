@@ -45,5 +45,5 @@ IF NOT DEFINED KUDU_SYNC_CMD (
   IF !ERRORLEVEL! NEQ 0 goto error
 
   :: Locally just running "kuduSync" would also work
-  SET KUDU_SYNC_CMD=node "%appdata%\npm\node_modules\kuduSync\bin\kuduSync"
+  SET KUDU_SYNC_CMD=%appdata%\npm\kuduSync.cmd
 )
