@@ -16,8 +16,8 @@ call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArguments}
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run web job deploy script
-IF DEFINED WEB_JOB_DEPLOY_CMD (
-  call :ExecuteCmd "%WEB_JOB_DEPLOY_CMD%"
+IF DEFINED WEBJOBS_DEPLOY_CMD (
+  call :ExecuteCmd "%WEBJOBS_DEPLOY_CMD%"
 )
 
 :: 4. KuduSync
