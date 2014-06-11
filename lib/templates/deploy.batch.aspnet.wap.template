@@ -7,7 +7,7 @@ echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (
-  call :ExecuteCmd "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
+  call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
