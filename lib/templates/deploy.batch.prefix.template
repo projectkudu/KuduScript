@@ -18,6 +18,8 @@ IF %ERRORLEVEL% NEQ 0 (
 :: Setup
 :: -----
 
+chcp 65001
+
 setlocal enabledelayedexpansion
 
 SET ARTIFACTS=%~dp0%..\artifacts
