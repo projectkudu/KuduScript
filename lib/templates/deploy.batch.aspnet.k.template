@@ -1,0 +1,43 @@
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
+
+echo Handling ProjectK Web Application deployment.
+
+:: Work around Kudu issue #1310
+set HOME=%HOMEDRIVE%%HOMEPATH%
+set KRE_HOME=%USERPROFILE%\.kre
+set KPM_PATH=%KRE_HOME%\packages\KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION%\bin\kpm
+
+:: 1. Install KRE
+call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';& '%SCM_KVM_PS_PATH%' %*" install %SCM_KRE_VERSION% -%SCM_KRE_ARCH%
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 2. Run KPM Restore
+call :ExecuteCmd "%KPM_PATH%" restore "{PROJECT_JSON}" --source %SCM_KRE_NUGET_API_URL% --source https://nuget.org/api/v2/
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 3. Run KPM Pack
+for %%* in (%DEPLOYMENT_TEMP%) do set DEPLOYMENT_K_TEMP=%%~n*
+call :ExecuteCmd "%KPM_PATH%" pack "{PROJECT_JSON}" --runtime KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION% --appfolder %DEPLOYMENT_K_TEMP% --out "%HOME%\site"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 4. Rename AspNet.Loader.dll
+if exist "%HOME%\site\wwwroot\bin\AspNet.Loader.dll" (
+  move "%HOME%\site\wwwroot\bin\AspNet.Loader.dll" "%HOME%\site\AspNet.Loader.dll_old"
+)
+
+:: 5. Cleanup possible .git folder in approot
+if exist "%DEPLOYMENT_TEMP%\approot\src\repository\.git" (
+  rd /q /s "%DEPLOYMENT_TEMP%\approot\src\repository\.git"
+)
+
+:: 6. KuduSync
+call %KUDU_SYNC_CMD% -v 50 -f "%HOME%\site\%DEPLOYMENT_K_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 7. Cleanup temp deployment location
+if exist "%HOME%\site\%DEPLOYMENT_K_TEMP%" (
+  rd /q /s "%HOME%\site\%DEPLOYMENT_K_TEMP%"
+)
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
