@@ -10,7 +10,7 @@ set KRE_HOME=%USERPROFILE%\.kre
 set KPM_PATH=%KRE_HOME%\packages\KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION%\bin\kpm
 
 :: 1. Install KRE
-call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';& '%SCM_KVM_PS_PATH%' %*" install %SCM_KRE_VERSION% -%SCM_KRE_ARCH%
+call :ExecuteCmd PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "[System.Threading.Thread]::CurrentThread.CurrentCulture = ''; [System.Threading.Thread]::CurrentThread.CurrentUICulture = '';& '%SCM_KVM_PS_PATH%' %*" install %SCM_KRE_VERSION% -%SCM_KRE_ARCH% -%SCM_KRE_CLR%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. Run KPM Restore
