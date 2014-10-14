@@ -19,7 +19,7 @@ IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run KPM Pack
 for %%* in (%DEPLOYMENT_TEMP%) do set DEPLOYMENT_K_TEMP=%%~n*
-call :ExecuteCmd "%KPM_PATH%" pack "{PROJECT_JSON}" --runtime KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION% --appfolder %DEPLOYMENT_K_TEMP% --out "%HOME%\site"
+call :ExecuteCmd "%KPM_PATH%" pack "{PROJECT_JSON}" --runtime KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION% --wwwroot-out %DEPLOYMENT_K_TEMP% --out "%HOME%\site"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. Rename AspNet.Loader.dll
