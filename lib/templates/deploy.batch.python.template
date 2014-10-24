@@ -1,0 +1,87 @@
+goto Deployment
+
+:: Utility Functions
+:: -----------------
+
+:SelectPythonVersion
+
+IF EXIST "%DEPLOYMENT_SOURCE%\runtime.txt" (
+  SET /p PYTHON_RUNTIME=<"%DEPLOYMENT_SOURCE%\runtime.txt"
+  IF !ERRORLEVEL! NEQ 0 goto error
+
+  IF "%PYTHON_RUNTIME%" == "python-2.7.8" (
+    SET PYTHON_VER=2.7
+  )
+  IF "%PYTHON_RUNTIME%" == "python-3.4.1" (
+    SET PYTHON_VER=3.4
+  )
+) ELSE (
+  SET PYTHON_VER=2.7
+)
+
+goto :EOF
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
+
+:Deployment
+echo Handling python deployment.
+
+:: 1. KuduSync
+IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
+  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%{SitePath}" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
+
+:: 2. Select python version
+call :SelectPythonVersion
+
+:: 3. Create virtual environment and install packages
+IF EXIST "%DEPLOYMENT_TARGET%\requirements.txt" (
+  pushd "%DEPLOYMENT_TARGET%"
+
+  IF NOT EXIST "%DEPLOYMENT_TARGET%\env\azure.env.%PYTHON_VER%.txt" (
+    IF EXIST "%DEPLOYMENT_TARGET%\env" (
+      echo Deleting incompatible virtual environment.
+      rmdir /q /s "%DEPLOYMENT_TARGET%\env"
+      IF !ERRORLEVEL! NEQ 0 goto error
+    )
+
+    echo Creating Python %PYTHON_VER% virtual environment.
+    IF "%PYTHON_VER%" == "2.7" (
+      d:\python27\python -m virtualenv env
+      IF !ERRORLEVEL! NEQ 0 goto error
+    ) ELSE (
+      IF "%PYTHON_VER%" == "3.4" (
+        d:\python34\python -m venv env
+        IF !ERRORLEVEL! NEQ 0 goto error
+      ) ELSE (
+        echo Unexpected value for PYTHON_VER: %PYTHON_VER%
+        goto error
+      )
+    )
+
+    copy /y NUL "%DEPLOYMENT_TARGET%\env\azure.env.%PYTHON_VER%.txt" >NUL
+  ) ELSE (
+    echo Found compatible virtual environment.
+  )
+
+  echo Pip install requirements.
+  env\scripts\pip install -r requirements.txt
+  IF !ERRORLEVEL! NEQ 0 goto error
+
+  REM Add additional package installation here
+  REM -- Example --
+  REM env\scripts\easy_install pytz
+  REM IF !ERRORLEVEL! NEQ 0 goto error
+
+  IF EXIST "%DEPLOYMENT_SOURCE%\web.%PYTHON_VER%.config" (
+    echo Overwriting web.config with web.%PYTHON_VER%.config
+    copy /y "%DEPLOYMENT_SOURCE%\web.%PYTHON_VER%.config" "%DEPLOYMENT_TARGET%\web.config"
+  )
+
+  popd
+)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
