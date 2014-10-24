@@ -61,6 +61,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.website;
   } else if (options.node) {
     projectType = generator.ProjectType.node;
+  } else if (options.python) {
+      projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
   } else {
