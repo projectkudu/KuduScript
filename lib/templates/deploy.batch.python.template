@@ -23,9 +23,13 @@ SET PYTHON_RUNTIME=%TEMP_RUNTIME:~0,10%
 
 IF "%PYTHON_RUNTIME%" == "python-2.7" (
   SET PYTHON_VER=2.7
+  SET PYTHON_EXE=d:\python27\python.exe
+  SET PYTHON_ENV_MODULE=virtualenv
 ) ELSE (
   IF "%PYTHON_RUNTIME%" == "python-3.4" (
     SET PYTHON_VER=3.4
+    SET PYTHON_EXE=d:\python34\python.exe
+    SET PYTHON_ENV_MODULE=venv
   ) ELSE (
     echo Unsupported Python runtime: %PYTHON_RUNTIME%
     echo Specify a supported value in runtime.txt:
@@ -73,18 +77,8 @@ IF NOT EXIST "%DEPLOYMENT_TARGET%\env\azure.env.%PYTHON_RUNTIME%.txt" (
   )
 
   echo Creating %PYTHON_RUNTIME% virtual environment.
-  IF "%PYTHON_RUNTIME%" == "python-2.7" (
-    d:\python27\python -m virtualenv env
-    IF !ERRORLEVEL! NEQ 0 goto error
-  ) ELSE (
-    IF "%PYTHON_RUNTIME%" == "python-3.4" (
-      d:\python34\python -m venv env
-      IF !ERRORLEVEL! NEQ 0 goto error
-    ) ELSE (
-      echo Unsupported Python runtime: %PYTHON_RUNTIME%
-      goto error
-    )
-  )
+  %PYTHON_EXE% -m %PYTHON_ENV_MODULE% env
+  IF !ERRORLEVEL! NEQ 0 goto error
 
   copy /y NUL "%DEPLOYMENT_TARGET%\env\azure.env.%PYTHON_RUNTIME%.txt" >NUL
 ) ELSE (
