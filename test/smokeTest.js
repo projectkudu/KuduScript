@@ -27,7 +27,7 @@ suite('Kudu Script Smoke Tests', function () {
     });
 
     test('Python generated batch script runs without a failure', function (done) {
-        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        generateFile(pathUtil.join(testDir, "app.py"), "content");
         var isBash = false;
         runScenario("--python", isBash, done);
     });
