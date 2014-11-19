@@ -9,7 +9,7 @@ function addDeploymentScriptOptions(command) {
        .description('Generate custom deployment script')
        .option('-r, --repositoryRoot [dir path]', 'The root path for the repository (default: .)')
        .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
-       .option('--aspProjectK <projectFilePath>', 'Create a deployment script for ProjectK web application, specify the project.json file path')
+       .option('--aspNet5 <projectFilePath>', 'Create a deployment script for ASP.NET 5 web application, specify the project.json file path')
        .option('--aspWebSite', 'Create a deployment script for basic website')
        .option('--node', 'Create a deployment script for node.js website')
        .option('--php', 'Create a deployment script for php website')
@@ -29,13 +29,13 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP || options.dotNetConsole || options.aspProjectK;
+  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNet5;
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspProjectK];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -55,8 +55,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var projectType;
   if (options.aspWAP) {
     projectType = generator.ProjectType.wap;
-  } else if (options.aspProjectK) {
-    projectType = generator.ProjectType.projectK
+  } else if (options.aspNet5) {
+    projectType = generator.ProjectType.aspNet5
   } else if (options.aspWebSite) {
     projectType = generator.ProjectType.website;
   } else if (options.node) {
