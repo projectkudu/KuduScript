@@ -30,7 +30,7 @@ call kpm restore "%DEPLOYMENT_SOURCE%" %SCM_KPM_RESTORE_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run KPM Pack
-call kpm pack "{PROJECT_JSON}" --runtime %USERPROFILE%\.kre\packages\KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION% --out "%DEPLOYMENT_TEMP%" %SCM_KPM_PACK_OPTIONS%
+call kpm pack "{PROJECT_JSON}" --runtime "%USERPROFILE%\.kre\packages\KRE-%SCM_KRE_CLR%-%SCM_KRE_ARCH%.%SCM_KRE_VERSION%" --out "%DEPLOYMENT_TEMP%" %SCM_KPM_PACK_OPTIONS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. KuduSync
