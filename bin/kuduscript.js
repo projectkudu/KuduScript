@@ -22,7 +22,8 @@ function addDeploymentScriptOptions(command) {
        .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
        .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
        .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-       .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
+       .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
+       .option('--msbuildPath <msbuildExePath>', 'Optional MSBuild path. If present, this will override the default %MSBUILD_PATH% in generated script');
 }
 
 function deploymentScriptExecute(name, options, log, confirm, _) {
@@ -34,6 +35,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
+  var msbuildPath = options.msbuildPath;
 
   var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5];
   var flagCount = 0;
@@ -74,7 +76,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     confirmFunc = function (message, callback) { callback(undefined, true); };
   }
 
-  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, log, confirmFunc);
+  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, msbuildPath, log, confirmFunc);
   scriptGenerator.generateDeploymentScript(_);
 }
 
