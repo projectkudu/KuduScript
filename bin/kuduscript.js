@@ -11,6 +11,7 @@ function addDeploymentScriptOptions(command) {
        .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
        .option('--aspNet5 <projectFilePath>', 'Create a deployment script for ASP.NET 5 web application, specify the project.json file path')
        .option('--aspWebSite', 'Create a deployment script for basic website')
+       .option('--go', 'Create a deployment script for Go website')
        .option('--node', 'Create a deployment script for node.js website')
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
@@ -35,7 +36,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5, options.go];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -59,6 +60,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.aspNet5
   } else if (options.aspWebSite) {
     projectType = generator.ProjectType.website;
+  }else if (options.go) {
+    projectType = generator.ProjectType.go;
   } else if (options.node) {
     projectType = generator.ProjectType.node;
   } else if (options.python) {

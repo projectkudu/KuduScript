@@ -1,0 +1,68 @@
+goto Deployment
+
+:: Utility Functions
+:: -----------------
+
+:SelectGoVersion
+
+IF DEFINED KUDU_SELECT_GO_VERSION_CMD (
+    :: TODO
+goto :EOF
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
+
+:Deployment
+ECHO Handling Go deployment.
+IF /I "%IN_PLACE_DEPLOYMENT%" EQU "1" (
+  ECHO Go web app does not support in-place deployment
+  goto error
+)
+
+ECHO Prepare workspace
+IF "%GOROOT%" == "" (
+    :: select go version TODO
+    SET GOROOT=D:\Program Files\go\1.4.2
+)
+ECHO GOROOT %GOROOT%
+
+:: Create Go workspace in DEPLOYMENT_TEMP
+::      DEPLOYMENT_TEMP\bin, DEPLOYMENT_TEMP\pkg, DEPLOYMENT_TEMP\src
+SET GOPATH=%DEPLOYMENT_TEMP%\gopath
+SET GOEXE="%GOROOT%\bin\go.exe"
+SET FOLDERNAME=azureapp
+SET GOAZUREAPP=%DEPLOYMENT_TEMP%\gopath\src\%FOLDERNAME%
+
+IF EXIST %GOPATH% (
+    ECHO GOPATH already exist %GOPATH%
+) else (
+    ECHO Creating GOPATH\bin %GOPATH%\bin
+    MKDIR "%GOPATH%\bin"
+    
+    ECHO Creating GOPATH\pkg %GOPATH%\pkg
+    MKDIR "%GOPATH%\pkg"
+    
+    ECHO Creating GOPATH\src %GOPATH%\src
+    MKDIR "%GOPATH%\src"
+    
+    ECHO Creating %GOAZUREAPP%
+    MKDIR %GOAZUREAPP%
+)
+
+ECHO Copy source code to Go workspace
+ROBOCOPY %DEPLOYMENT_SOURCE% %GOAZUREAPP% /E /NFL /NDL /NP /XD .git .hg /XF .deployment deploy.cmd
+
+PUSHD "%GOPATH%\src"
+ECHO Resolving dependencies
+%GOEXE% get %FOLDERNAME%
+
+ECHO Building Go app to produce exe file
+%GOEXE% build -o %DEPLOYMENT_TARGET%\%FOLDERNAME%.exe %FOLDERNAME%
+POPD
+
+ECHO Copy static files for deployment
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd;*.go"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
