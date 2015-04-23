@@ -65,4 +65,15 @@ ECHO Copy static files for deployment
 call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd;*.go"
 IF !ERRORLEVEL! NEQ 0 goto error
 
+IF DEFINED GO_WEB_CONFIG_TEMPLATE (
+    :: web.config copy is specific to Azure, if environment variable not defined, must be run from other environment. Skip this action
+    ECHO Copy web.config
+    IF NOT EXIST "%DEPLOYMENT_TARGET%\web.config" (
+        COPY %GO_WEB_CONFIG_TEMPLATE% "%DEPLOYMENT_TARGET%\web.config"
+        IF !ERRORLEVEL! NEQ 0 goto error
+    ) else (
+        ECHO web.config already existed. Skip!
+    )
+)
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
