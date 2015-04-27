@@ -47,18 +47,18 @@ IF EXIST %GOPATH% (
     MKDIR "%GOPATH%\src"
     
     ECHO Creating %GOAZUREAPP%
-    MKDIR %GOAZUREAPP%
+    MKDIR "%GOAZUREAPP%"
 )
 
 ECHO Copy source code to Go workspace
-ROBOCOPY %DEPLOYMENT_SOURCE% %GOAZUREAPP% /E /NFL /NDL /NP /XD .git .hg /XF .deployment deploy.cmd
+ROBOCOPY "%DEPLOYMENT_SOURCE%" "%GOAZUREAPP%" /E /NFL /NDL /NP /XD .git .hg /XF .deployment deploy.cmd
 
 PUSHD "%GOPATH%\src"
 ECHO Resolving dependencies
 %GOEXE% get %FOLDERNAME%
 
 ECHO Building Go app to produce exe file
-%GOEXE% build -o %DEPLOYMENT_SOURCE%\%FOLDERNAME%.exe %FOLDERNAME%
+%GOEXE% build -o "%DEPLOYMENT_SOURCE%\%FOLDERNAME%.exe" %FOLDERNAME%
 POPD
 
 ECHO Copy files for deployment
@@ -66,13 +66,13 @@ call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMEN
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: Clean up
-DEL /Q /F %DEPLOYMENT_SOURCE%\%FOLDERNAME%.exe
+DEL /Q /F "%DEPLOYMENT_SOURCE%\%FOLDERNAME%.exe"
 
 IF DEFINED GO_WEB_CONFIG_TEMPLATE (
     :: web.config copy is specific to Azure, if environment variable not defined, must be run from other environment. Skip this action
     ECHO Copy web.config
     IF NOT EXIST "%DEPLOYMENT_TARGET%\web.config" (
-        COPY %GO_WEB_CONFIG_TEMPLATE% "%DEPLOYMENT_TARGET%\web.config"
+        COPY "%GO_WEB_CONFIG_TEMPLATE%" "%DEPLOYMENT_TARGET%\web.config"
         IF !ERRORLEVEL! NEQ 0 goto error
     ) else (
         ECHO web.config already existed. Skip!
