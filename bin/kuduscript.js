@@ -24,7 +24,9 @@ function addDeploymentScriptOptions(command) {
        .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
        .option('--no-dot-deployment', 'Do not generate the .deployment file.')
        .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
-       .option('-k, --aspNet5Runtime <runtimeVersion>', 'The runtime version for ASP.NET5');
+       .option('--aspNet5Version <version>', 'The Dnx version for ASP.NET 5')
+       .option('--aspNet5Runtime <runtime>', 'The .NET runtime (clr vs coreclr) for ASP.NET 5')
+       .option('--aspNet5Architecture <architecture>', 'The architecture (x64 vs x86) for ASP.NET 5');
 }
 
 function deploymentScriptExecute(name, options, log, confirm, _) {
@@ -36,7 +38,9 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
+  var aspNet5Version = options.aspNet5Version;
   var aspNet5Runtime = options.aspNet5Runtime;
+  var aspNet5Architecture = options.aspNet5Architecture;
 
   var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5, options.go];
   var flagCount = 0;
@@ -79,7 +83,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     confirmFunc = function (message, callback) { callback(undefined, true); };
   }
 
-  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, aspNet5Runtime, log, confirmFunc);
+  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, aspNet5Version, aspNet5Runtime, aspNet5Architecture, log, confirmFunc);
   scriptGenerator.generateDeploymentScript(_);
 }
 
