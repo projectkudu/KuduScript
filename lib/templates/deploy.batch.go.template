@@ -1,14 +1,5 @@
 goto Deployment
 
-:: Utility Functions
-:: -----------------
-
-:SelectGoVersion
-
-IF DEFINED KUDU_SELECT_GO_VERSION_CMD (
-    :: TODO
-goto :EOF
-
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Deployment
 :: ----------
@@ -22,8 +13,26 @@ IF /I "%IN_PLACE_DEPLOYMENT%" EQU "1" (
 
 ECHO Prepare workspace
 IF "%GOROOT%" == "" (
-    :: select go version TODO
-    SET GOROOT=D:\Program Files\go\1.4.2
+  IF DEFINED GO_WEB_CONFIG_TEMPLATE (
+    CALL PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "%SELECT_LATEST_VERSION_CMD% '%ProgramW6432%\Go' '%DEPLOYMENT_TEMP%\___GO_RUNTIME.tmp'"
+    IF !ERRORLEVEL! NEQ 0 goto error
+    
+    PUSHD "%DEPLOYMENT_TEMP%"
+    for /f %%i in (___GO_RUNTIME.tmp) do (
+      SET GO_RUNTIME_VERSION=%%i
+      GOTO :ENDLOOP
+    )
+    :ENDLOOP
+    POPD
+
+    ECHO Detected Go %GO_RUNTIME_VERSION% from Azure
+    SET GOROOT=%ProgramW6432%\Go\%GO_RUNTIME_VERSION%
+  ) 
+
+  IF NOT DEFINED GO_WEB_CONFIG_TEMPLATE (
+    ECHO Default to Go 1.5
+    SET GOROOT=%ProgramW6432%\Go\1.5
+  )
 )
 ECHO GOROOT %GOROOT%
 
@@ -33,6 +42,11 @@ SET GOPATH=%DEPLOYMENT_TEMP%\gopath
 SET GOEXE="%GOROOT%\bin\go.exe"
 SET FOLDERNAME=azureapp
 SET GOAZUREAPP=%DEPLOYMENT_TEMP%\gopath\src\%FOLDERNAME%
+
+IF NOT EXIST %GOEXE% (
+  ECHO go.exe not found!
+  goto error
+)
 
 IF EXIST %GOPATH% (
     ECHO GOPATH already exist %GOPATH%
