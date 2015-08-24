@@ -26,7 +26,8 @@ function addDeploymentScriptOptions(command) {
        .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
        .option('--aspNet5Version <version>', 'The Dnx version for ASP.NET 5')
        .option('--aspNet5Runtime <runtime>', 'The .NET runtime (clr vs coreclr) for ASP.NET 5')
-       .option('--aspNet5Architecture <architecture>', 'The architecture (x64 vs x86) for ASP.NET 5');
+       .option('--aspNet5Architecture <architecture>', 'The architecture (x64 vs x86) for ASP.NET 5')
+       .option('--dnxConsoleApp <projectDirectory>', 'Creates a deployment script for a DNX base console app as a webjob');
 }
 
 function deploymentScriptExecute(name, options, log, confirm, _) {
@@ -41,8 +42,9 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var aspNet5Version = options.aspNet5Version;
   var aspNet5Runtime = options.aspNet5Runtime;
   var aspNet5Architecture = options.aspNet5Architecture;
+  var dnxConsoleApp = options.dnxConsoleApp;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNet5, options.go, options.dnxConsoleApp];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -74,6 +76,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
       projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
+  } else if (options.dnxConsoleApp) {
+    projectType = generator.ProjectType.dnxConsoleApp;
   } else {
     projectType = generator.ProjectType.basic;
   }
@@ -83,7 +87,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     confirmFunc = function (message, callback) { callback(undefined, true); };
   }
 
-  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, aspNet5Version, aspNet5Runtime, aspNet5Architecture, log, confirmFunc);
+  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, aspNet5Version, aspNet5Runtime, aspNet5Architecture, dnxConsoleApp, log, confirmFunc);
   scriptGenerator.generateDeploymentScript(_);
 }
 
