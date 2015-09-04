@@ -14,7 +14,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" EQU "1" (
 ECHO Prepare workspace
 IF "%GOROOT%" == "" (
   IF DEFINED GO_WEB_CONFIG_TEMPLATE (
-    CALL PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "%SELECT_LATEST_VERSION_CMD% '%ProgramW6432%\Go' '%DEPLOYMENT_TEMP%\___GO_RUNTIME.tmp'"
+    CALL PowerShell -NoProfile -NoLogo -ExecutionPolicy unrestricted -Command "&('%SELECT_LATEST_VERSION_CMD%') '%ProgramW6432%\Go' '%DEPLOYMENT_TEMP%\___GO_RUNTIME.tmp'"
     IF !ERRORLEVEL! NEQ 0 goto error
     
     PUSHD "%DEPLOYMENT_TEMP%"
