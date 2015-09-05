@@ -19,7 +19,7 @@ function addDeploymentScriptOptions(command) {
        .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
        .option('-s, --solutionFile [file path]', 'The solution file path (sln)')
        .option('-p, --sitePath [directory path]', 'The path to the site being deployed (default: same as repositoryRoot)')
-       .option('-t, --scriptType [batch|bash]', 'The script output type (default: batch)')
+       .option('-t, --scriptType [batch|bash|posh]', 'The script output type (default: batch)')
        .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
        .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
        .option('--no-dot-deployment', 'Do not generate the .deployment file.')
