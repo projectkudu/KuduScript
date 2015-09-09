@@ -12,36 +12,54 @@ var testDirBase = "test";
 var testDirIndex = 0;
 var testDir = "";
 
+var ScriptType = {
+  batch: 'BATCH',
+  bash: 'BASH',
+  posh: 'POSH'
+};
+
 // Tests Suite
 suite('Kudu Script Smoke Tests', function () {
     test('Basic generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        var isBash = false;
-        runScenario("--basic", isBash, done);
+        var scriptType = ScriptType.batch;
+        runScenario("--basic", scriptType, done);
     });
 
     test('Node generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        var isBash = false;
-        runScenario("--node", isBash, done);
+        var scriptType = ScriptType.batch;
+        runScenario("--node", scriptType, done);
     });
 
     test('Python generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "app.py"), "content");
-        var isBash = false;
-        runScenario("--python", isBash, done);
+        var scriptType = ScriptType.batch;
+        runScenario("--python", scriptType, done);
     });
 
     test('Basic generated bash script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        var isBash = true;
-        runScenario("--basic", isBash, done);
+        var scriptType = ScriptType.bash;
+        runScenario("--basic", scriptType, done);
     });
 
     test('Node generated bash script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
-        var isBash = true;
-        runScenario("--node", isBash, done);
+        var scriptType = ScriptType.bash;
+        runScenario("--node", scriptType, done);
+    });
+
+    test('Basic generated posh script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var scriptType = ScriptType.posh;
+        runScenario("--basic", scriptType, done);
+    });
+
+    test('Node generated posh script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var scriptType = ScriptType.posh;
+        runScenario("--node", scriptType, done);
     });
 
     setup(function () {
@@ -66,12 +84,8 @@ function incrementTestDir() {
 // 1. Generate the script using the flags provided.
 // 2. Run the generated script.
 // 3. Make sure script generation and script generated didn't fail execution.
-function runScenario(flags, isBash, callback) {
-    var command = "node " + pathUtil.join(__dirname, "..", "bin", "kuduscript") + " -y -o \"" + testDir + "\" " + flags;
-
-    if (isBash) {
-        command += " --scriptType bash";
-    }
+function runScenario(flags, scriptType, callback) {
+    var command = "node " + pathUtil.join(__dirname, "..", "bin", "kuduscript") + " -y -o \"" + testDir + "\" " + flags + " --scriptType " + scriptType;
 
     console.log("command: " + command);
     exec(command,
@@ -88,19 +102,21 @@ function runScenario(flags, isBash, callback) {
             if (error) {
                 callback(error);
             } else {
-                testScript(isBash, callback);
+                testScript(scriptType, callback);
             }
         });
 }
 
-function testScript(isBash, callback) {
+function testScript(scriptType, callback) {
     var generatedScriptPath = pathUtil.join(testDir, "deploy");
-    generatedScriptPath += isBash ? ".sh" : ".cmd";
+    generatedScriptPath += (scriptType == ScriptType.bash ? ".sh" : (scriptType == ScriptType.posh ? ".ps1" : ".cmd"));
 
     var command = "\"" + generatedScriptPath + "\"";
 
-    if (isBash) {
+    if (scriptType == ScriptType.bash) {
         command = "bash " + command;
+    } else if (scriptType == ScriptType.posh) {
+        command = "powershell -NoProfile -NoLogo -ExecutionPolicy Unrestricted -File " + command;
     }
 
     console.log("command: " + command);
@@ -151,7 +167,7 @@ function tryGetFileStat(path) {
     try {
         return fs.statSync(path);
     } catch (e) {
-        if (e.errno == 34) {
+        if (e.errno == 34 || e.code == 'ENOENT') {
             // Return null if path doesn't exist
             return null;
         }
