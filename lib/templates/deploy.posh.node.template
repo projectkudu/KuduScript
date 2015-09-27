@@ -10,8 +10,8 @@ function selectNodeVersion() {
     # The following are done only on Windows Azure Websites environment
     $SELECT_NODE_VERSION = "$env:KUDU_SELECT_NODE_VERSION_CMD `"$DEPLOYMENT_SOURCE{SitePath}`" `"$DEPLOYMENT_TARGET`" `"$DEPLOYMENT_TEMP`""
     try {
-      iex $SELECT_NODE_VERSION
-    } catch {
+      iex $SELECT_NODE_VERSION | echo
+    } finally {
       exitWithMessageOnError "select node version failed"
     }
 
@@ -40,7 +40,7 @@ echo "Handling node.js deployment."
 
 # 1. KuduSync
 if ($env:IN_PLACE_DEPLOYMENT -ne "1") {
-  & $KUDU_SYNC_CMD -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.ps1"
+  & $KUDU_SYNC_CMD -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.ps1" 2>&1 | echo
   exitWithMessageOnError "Kudu Sync failed"
 }
 
@@ -51,8 +51,8 @@ selectNodeVersion
 if (Test-Path "$DEPLOYMENT_TARGET\package.json") {
   pushd "$DEPLOYMENT_TARGET"
   try {
-    iex "$NPM_CMD install --production"
-  } catch {
+    iex "$NPM_CMD install --production" | echo
+  } finally {
     exitWithMessageOnError "npm failed"
   }
   popd

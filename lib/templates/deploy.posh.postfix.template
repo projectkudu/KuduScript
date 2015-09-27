@@ -1,7 +1,7 @@
 
 # Post deployment stub
 if ($env:POST_DEPLOYMENT_ACTION -ne $null) {
-  & $env:POST_DEPLOYMENT_ACTION
+  & $env:POST_DEPLOYMENT_ACTION 2>&1 | echo
   exitWithMessageOnError "post deployment action failed"
 }
 

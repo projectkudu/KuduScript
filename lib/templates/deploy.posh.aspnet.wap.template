@@ -7,22 +7,22 @@ echo "Handling .NET Web Application deployment."
 
 # 1. Restore NuGet packages
 if (Test-Path "{SolutionPath}") {
-  nuget restore "$DEPLOYMENT_SOURCE\{SolutionPath}"
+  nuget restore "$DEPLOYMENT_SOURCE\{SolutionPath}" 2>&1 | echo
   exitWithMessageOnError "NuGet restore failed"
 }
 
 # 2. Build to the temporary path
 if ($env:IN_PLACE_DEPLOYMENT -ne "1") {
-  & $MSBUILD_PATH {MSBuildArguments}
+  & $MSBUILD_PATH {MSBuildArguments} 2>&1 | echo
 } else {
-  & $MSBUILD_PATH {MSBuildArgumentsForInPlace}
+  & $MSBUILD_PATH {MSBuildArgumentsForInPlace} 2>&1 | echo
 }
 
 exitWithMessageOnError "MSBuild failed"
 
 # 3. KuduSync
 if ($env:IN_PLACE_DEPLOYMENT -ne "1") {
-  & $KUDU_SYNC_CMD -v 50 -f "$DEPLOYMENT_TEMP" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.ps1"
+  & $KUDU_SYNC_CMD -v 50 -f "$DEPLOYMENT_TEMP" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.ps1" 2>&1 | echo
   exitWithMessageOnError "Kudu Sync failed"
 }
 
