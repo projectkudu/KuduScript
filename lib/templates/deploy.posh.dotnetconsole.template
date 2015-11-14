@@ -12,7 +12,7 @@ if (Test-Path "{SolutionPath}") {
 }
 
 # 2. Build to the temporary path
-& $MSBUILD_PATH {MSBuildArguments}
+& "$MSBUILD_PATH" {MSBuildArguments}
 exitWithMessageOnError "MSBuild failed"
 
 # 3. Run web job deploy script

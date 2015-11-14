@@ -6,7 +6,7 @@
 echo "Handling .NET Web Site deployment."
 
 # 1. Build to the repository path
-& $MSBUILD_PATH {MSBuildArguments}
+& "$MSBUILD_PATH" {MSBuildArguments}
 exitWithMessageOnError "MSBuild failed"
 
 # 2. KuduSync

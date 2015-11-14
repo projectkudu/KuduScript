@@ -13,9 +13,9 @@ if (Test-Path "{SolutionPath}") {
 
 # 2. Build to the temporary path
 if ($env:IN_PLACE_DEPLOYMENT -ne "1") {
-  & $MSBUILD_PATH {MSBuildArguments}
+  & "$MSBUILD_PATH" {MSBuildArguments}
 } else {
-  & $MSBUILD_PATH {MSBuildArgumentsForInPlace}
+  & "$MSBUILD_PATH" {MSBuildArgumentsForInPlace}
 }
 
 exitWithMessageOnError "MSBuild failed"
