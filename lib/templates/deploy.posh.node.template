@@ -51,6 +51,7 @@ selectNodeVersion
 if (Test-Path "$DEPLOYMENT_TARGET\package.json") {
   pushd "$DEPLOYMENT_TARGET"
   try {
+    iex "$NPM_CMD prune --production"
     iex "$NPM_CMD install --production"
   } catch {
     exitWithMessageOnError "npm failed"
