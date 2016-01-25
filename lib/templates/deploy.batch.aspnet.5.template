@@ -16,6 +16,10 @@ IF "%DEPLOYMENT_TARGET:~-1%"=="\" (
     SET DEPLOYMENT_TARGET=%DEPLOYMENT_TARGET:~0,-1%
 )
 
+:: Set DNVM Powershell script when not set
+IF "%SCM_DNVM_PS_PATH%"=="" (
+    SET SCM_DNVM_PS_PATH="%USERPROFILE%\.dnx\bin\dnvm.ps1"
+)
 
 :: 1. Set DNX Path
 set DNVM_CMD_PATH_FILE="%USERPROFILE%\.dnx\temp-set-envvars.cmd"
