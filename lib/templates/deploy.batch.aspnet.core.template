@@ -7,9 +7,6 @@ echo Handling ASP.NET Core Web Application deployment.
 SET USE_MSBUILD={USE_MSBUILD}
 
 IF DEFINED WEBSITE_SITE_NAME (
-  :: We don't need the XML docs
-  set NUGET_XMLDOC_MODE=skip
-
   :: Make the NuGet packages go in a persisted folder instead of %USERPROFILE%, which on Azure goes in Temp space
   set NUGET_PACKAGES=%HOME%\.nuget
 )
@@ -20,8 +17,6 @@ IF !ERRORLEVEL! NEQ 0 goto error
 :: 2. Build and publish
 IF DEFINED USE_MSBUILD (
   call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArguments}
-  IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd dotnet publish "{PROJECT_JSON}" --output "%DEPLOYMENT_TEMP%" --configuration Release --no-build
   IF !ERRORLEVEL! NEQ 0 goto error
 ) ELSE (
   call :ExecuteCmd dotnet publish "{PROJECT_JSON}" --output "%DEPLOYMENT_TEMP%" --configuration Release
