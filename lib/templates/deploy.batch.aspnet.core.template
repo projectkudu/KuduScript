@@ -6,10 +6,6 @@ echo Handling ASP.NET Core Web Application deployment.
 
 SET USE_MSBUILD={USE_MSBUILD}
 
-IF DEFINED WEBSITE_SITE_NAME (
-  :: Make the NuGet packages go in a persisted folder instead of %USERPROFILE%, which on Azure goes in Temp space
-  set NUGET_PACKAGES=%HOME%\.nuget
-)
 :: 1. Restore nuget packages
 call :ExecuteCmd nuget.exe restore -packagesavemode nuspec
 IF !ERRORLEVEL! NEQ 0 goto error
