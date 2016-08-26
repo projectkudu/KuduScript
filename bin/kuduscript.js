@@ -15,6 +15,7 @@ function addDeploymentScriptOptions(command) {
        .option('--node', 'Create a deployment script for node.js website')
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
+       .option('--functionApp', 'Create a deployment script for function App')
        .option('--basic', 'Create a deployment script for any other website')
        .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
        .option('-s, --solutionFile [file path]', 'The solution file path (sln)')
@@ -36,7 +37,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.dotNetConsole, options.aspNetCore, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -47,10 +48,10 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic or --node');
+    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --functionApp or --node');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic or --node');
+    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --functionApp or --node');
   }
 
   var projectType;
@@ -68,6 +69,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
       projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
+  } else if (options.functionApp) {
+    projectType = generator.ProjectType.functionApp;
   } else {
     projectType = generator.ProjectType.basic;
   }

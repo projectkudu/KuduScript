@@ -8,11 +8,15 @@ echo "Handling ASP.NET Core Web Application deployment with MSBuild."
 nuget.exe restore "$DEPLOYMENT_SOURCE\{SolutionPath}" -packagesavemode nuspec
 exitWithMessageOnError "NuGet restore failed"
 
-# 2. Build and publish
+# 2. Build
 & "$MSBUILD_PATH" {MSBuildArguments}
 exitWithMessageOnError "MSBuild failed"
 
-# 3. KuduSync
+# 3. Publish
+& "$MSBUILD_PATH" {DotNetPublishArguments}
+exitWithMessageOnError "MSPublish failed"
+
+# 4. KuduSync
 & $KUDU_SYNC_CMD -v 50 -f "$DEPLOYMENT_TEMP" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.ps1"
 exitWithMessageOnError "Kudu Sync failed"
 
