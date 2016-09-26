@@ -1,6 +1,8 @@
 var commander = require('commander');
 var generator = require('../lib/generator');
-
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = require('../lib/polyfill.js').endsWith;
+}
 var version = require('../package.json').version;
 
 function addDeploymentScriptOptions(command) {
