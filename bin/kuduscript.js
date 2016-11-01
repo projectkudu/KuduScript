@@ -11,7 +11,7 @@ function addDeploymentScriptOptions(command) {
        .description('Generate custom deployment script')
        .option('-r, --repositoryRoot [dir path]', 'The root path for the repository (default: .)')
        .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
-       .option('--aspNetCore <projectFilePath>', 'Create a deployment script for ASP.NET Core web application, specify the project.json file path')
+       .option('--aspNetCore <projectFilePath>', 'Create a deployment script for ASP.NET Core web application, specify the project file path') // could be project.json, xproj, csproj
        .option('--aspWebSite', 'Create a deployment script for basic website')
        .option('--go', 'Create a deployment script for Go website')
        .option('--node', 'Create a deployment script for node.js website')

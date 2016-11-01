@@ -5,11 +5,11 @@
 echo "Handling ASP.NET Core Web Application deployment."
 
 # 1. Restore nuget packages
-nuget.exe restore  -packagesavemode nuspec
-exitWithMessageOnError "NuGet restore failed"
+{Restore}
+exitWithMessageOnError "Restore failed"
 
 # 2. Build and publish
-dotnet publish "{PROJECT_JSON}" --output "$DEPLOYMENT_TEMP" --configuration Release
+dotnet publish "{PROJECT}" --output "$DEPLOYMENT_TEMP" --configuration Release
 exitWithMessageOnError "dotnet publish failed"
 
 # 3. KuduSync
