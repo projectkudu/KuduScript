@@ -15,7 +15,7 @@ function addDeploymentScriptOptions(command) {
        .option('--aspWebSite', 'Create a deployment script for basic website')
        .option('--go', 'Create a deployment script for Go website')
        .option('--node', 'Create a deployment script for node.js website')
-	   .option('--ruby', 'Create a deployment script for ruby website')
+       .option('--ruby', 'Create a deployment script for ruby website')
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
        .option('--functionApp', 'Create a deployment script for function App')
