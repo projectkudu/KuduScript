@@ -1,0 +1,42 @@
+# Rails Helpers
+# -----------
+
+initializeDeploymentConfig() {
+	if [ -z $BUNDLE_WITHOUT ]; then 
+		echo "Bundle install with no 'without' options"; 
+		OPTIONS="";
+	else 
+		OPTIONS="--without $BUNDLE_WITHOUT";
+		echo "Bundle install with options $OPTIONS";
+	fi
+}
+
+##################################################################################################################################
+# Deployment
+# ----------
+
+echo Ruby on Rails deployment.
+
+# 1. KuduSync
+if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
+  exitWithMessageOnError "Kudu Sync failed"
+fi
+
+initializeDeploymentConfig
+
+echo "$DEPLOYMENT_TARGET"
+if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
+  echo "Found gemfile"
+  pushd "$DEPLOYMENT_TARGET"
+  eval "$(rbenv init -)"
+  exitWithMessageOnError "init failed"
+  rbenv global 2.3.1
+  exitWithMessageOnError "rbenv global 2.3.1 failed"
+  eval bundle install --deployment $OPTIONS
+  exitWithMessageOnError "bundler failed"
+  popd
+fi
+
+##################################################################################################################################
+
