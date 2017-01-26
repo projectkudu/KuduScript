@@ -39,7 +39,7 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   exitWithMessageOnError "Failed to switch ruby versions"
   eval bundle install --deployment $OPTIONS
   exitWithMessageOnError "bundler failed"
-  if [ "$ASSETS_PRECOMPILE" == true]; then 
+  if [ "$ASSETS_PRECOMPILE" == true ]; then 
 	echo "running rake assets:precompile"
     bundle exec rake --trace assets:precompile
   fi
