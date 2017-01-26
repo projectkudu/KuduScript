@@ -1,7 +1,7 @@
 {
   "name": "kuduscript",
   "author": "Outercurve Foundation",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Tool for generating deployment scripts for Azure Websites",
   "tags": [
     "azure",
