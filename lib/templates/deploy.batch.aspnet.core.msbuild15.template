@@ -2,18 +2,14 @@
 :: Deployment
 :: ----------
 
-echo Handling ASP.NET Core Web Application deployment with MSBuild.
+echo Handling ASP.NET Core Web Application deployment with nuget4.1 and MSBuild15.
 
 :: 1. Restore nuget packages
-call :ExecuteCmd {Restore} "%DEPLOYMENT_SOURCE%\{SolutionPath}"
+call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\{RestoreArguments}" -Recursive
 IF !ERRORLEVEL! NEQ 0 goto error
 
-:: 2. Build
-call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArguments}
-IF !ERRORLEVEL! NEQ 0 goto error
-
-:: 3. Publish
-call :ExecuteCmd "%MSBUILD_PATH%" {DotNetPublishArguments}
+:: 2. Build and publish
+call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\{MSBuildArguments}" /t:Publish /p:PublishDir="%DEPLOYMENT_TEMP%";Configuration=Release %SCM_BUILD_ARGS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 4. KuduSync
