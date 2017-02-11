@@ -1,0 +1,28 @@
+##################################################################################################################################
+# Deployment
+# ----------
+
+echo ASP.NET Core site deployment.
+
+echo Current directory: `pwd`
+echo Deployment source: $DEPLOYMENT_SOURCE{SitePath}
+echo Target directory: $DEPLOYMENT_TARGET
+echo Temporary solution at: $DEPLOYMENT_TEMP
+
+echo Restore dependencies
+# dotnet restore "$DEPLOYMENT_SOURCE{SitePath}"
+{Restore}
+exitWithMessageOnError "dotnet restore failed"
+
+echo Publishing...
+dotnet publish -o "$DEPLOYMENT_TEMP" "$DEPLOYMENT_SOURCE{SitePath}"
+exitWithMessageOnError "dotnet publish failed"
+
+# KuduSync
+echo Performing kudusync...
+if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_TEMP" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
+  exitWithMessageOnError "Kudu Sync failed"
+fi
+
+##################################################################################################################################
