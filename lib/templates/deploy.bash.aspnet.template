@@ -1,0 +1,9 @@
+if [ "x$DEPLOYMENT_TEMP" = x ]; then
+    DEPLOYMENT_TEMP=/tmp/`date +%s`
+    CLEAN_LOCAL_DEPLOYMENT_TEMP=true
+fi
+
+if [ "x$CLEAN_LOCAL_DEPLOYMENT_TEMP" = xtrue ]; then
+    rm -rf "$DEPLOYMENT_TEMP"
+    mkdir "$DEPLOYMENT_TEMP"
+fi
