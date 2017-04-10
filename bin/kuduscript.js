@@ -76,6 +76,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.functionApp;
   } else if (options.ruby) {
     projectType = generator.ProjectType.ruby;
+  } else if (options.php) {
+    projectType = generator.ProjectType.php;
   } else {
     projectType = generator.ProjectType.basic;
   }
