@@ -2,13 +2,13 @@
 # -----------
 
 initializeDeploymentConfig() {
-	if [ ! -e "$COMPOSERARGS" ]; then
-    COMPOSERARGS="--no-interaction --prefer-dist --optimize-autoloader --no-progress --no-dev --verbose"
-    echo "No COMPOSERARGS variable declared in App Settings, using the default settings"
+	if [ ! -e "$COMPOSER_ARGS" ]; then
+    COMPOSER_ARGS="--no-interaction --prefer-dist --optimize-autoloader --no-progress --no-dev --verbose"
+    echo "No COMPOSER_ARGS variable declared in App Settings, using the default settings"
   else
-    echo "Using COMPOSERARGS variable declared in App Setting"
+    echo "Using COMPOSER_ARGS variable declared in App Setting"
   fi
-  echo "Composer settings: $COMPOSERARGS"
+  echo "Composer settings: $COMPOSER_ARGS"
 }
 
 ##################################################################################################################################
@@ -35,7 +35,7 @@ echo "$DEPLOYMENT_TARGET"
 if [ -e "$DEPLOYMENT_TARGET/composer.json" ]; then
   echo "Found composer.json"
   pushd "$DEPLOYMENT_TARGET"
-  composer install $COMPOSERARGS
+  composer install $COMPOSER_ARGS
   exitWithMessageOnError "Composer install failed"
   popd
 fi
