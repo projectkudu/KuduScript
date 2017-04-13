@@ -6,7 +6,7 @@ initializeDeploymentConfig() {
     COMPOSERARGS="--no-interaction --prefer-dist --optimize-autoloader --no-progress --no-dev --verbose"
     echo "No COMPOSERARGS variable declared in App Settings, using the default settings"
   else
-    echo "Using COMPOSERARGS variable delcared in App Setting"
+    echo "Using COMPOSERARGS variable declared in App Setting"
   fi
   echo "Composer settings: $COMPOSERARGS"
 }
