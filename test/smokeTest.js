@@ -50,6 +50,12 @@ suite('Kudu Script Smoke Tests', function () {
         runScenario("--node", scriptType, done);
     });
 
+    test('PHP generated bash script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "composer.json"), "content");
+        var scriptType = ScriptType.bash;
+        runScenario("--php", scriptType, done);
+    });
+
     test('Basic generated posh script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
         var scriptType = ScriptType.posh;
