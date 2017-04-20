@@ -35,9 +35,16 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   pushd "$DEPLOYMENT_TARGET"
   eval "$(rbenv init -)"
   exitWithMessageOnError "init failed"
+  echo "Setting ruby version"
   rbenv global $WEBSITES_LATEST_NODE_VERSION
   exitWithMessageOnError "Failed to switch ruby versions"
-  eval bundle install --deployment $OPTIONS
+  bundle config --local path "vendor/bundle"
+  echo "Running bundle clean"
+  bundle clean --force
+  echo "Running bundle install"
+  bundle install --deployment $OPTIONS
+  echo "Running bundle package"
+  bundle package --all
   exitWithMessageOnError "bundler failed"
   if [ "$ASSETS_PRECOMPILE" == true ]; then 
 	echo "running rake assets:precompile"
