@@ -42,7 +42,7 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   echo "Running bundle clean"
   bundle clean --force
   echo "Running bundle install"
-  bundle install --deployment $OPTIONS
+  bundle install --path "vendor/bundle" $OPTIONS
   echo "Running bundle package"
   bundle package --all
   exitWithMessageOnError "bundler failed"
