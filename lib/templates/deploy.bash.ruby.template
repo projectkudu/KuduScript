@@ -2,18 +2,17 @@
 # -----------
 
 setLatestRubyVersion(){
-    # Hardcoded to 2.3.3 for now until we support more versions
-	LATEST_RUBY_VERSION=2.3.3
+	LATEST_RUBY_VERSION=$(ls /usr/local/.rbenv/versions | grep -v - | grep 2.3 | tail -n 1)
 	echo "Using ruby version $LATEST_RUBY_VERSION"
 }
 
 initializeDeploymentConfig() {
 	if [ -z $BUNDLE_WITHOUT ]; then 
 		echo "Bundle install with no 'without' options"; 
-		OPTIONS="";
+		RUBY_OPTIONS="";
 	else 
-		OPTIONS="--without $BUNDLE_WITHOUT";
-		echo "Bundle install with options $OPTIONS";
+		RUBY_OPTIONS="--without $BUNDLE_WITHOUT";
+		echo "Bundle install with options $RUBY_OPTIONS";
 	fi
 	
 	if [ -z $BUNDLE_INSTALL_LOCATION ]; then 
@@ -23,11 +22,11 @@ initializeDeploymentConfig() {
 		echo "Gem installation directory is $BUNDLE_INSTALL_LOCATION";
 	fi
 	
-	if [ -z $SITE_CONFIG_DIR ]; then 
+	if [ -z $RUBY_SITE_CONFIG_DIR ]; then 
 		echo "Defaulting site config directory to /home/site/config"; 
-		SITE_CONFIG_DIR="/home/site/config"
+		RUBY_SITE_CONFIG_DIR="/home/site/config"
 	else 
-		echo "site config directory is $SITE_CONFIG_DIR";
+		echo "site config directory is $RUBY_SITE_CONFIG_DIR";
 	fi
 	
 	setLatestRubyVersion
@@ -65,19 +64,19 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   bundle clean --force
   
   echo "Running bundle install"
-  mkdir -p /tmp/bundle
+  mkdir -p $BUNDLE_INSTALL_LOCATION
   bundle config --global path $BUNDLE_INSTALL_LOCATION
-  bundle install --no-deployment $OPTIONS
+  bundle install --no-deployment $RUBY_OPTIONS
   exitWithMessageOnError "bundler failed"
   
   echo "Zipping up bundle contents"
   tar -zcf /tmp/gems.tgz -C $BUNDLE_INSTALL_LOCATION .
   exitWithMessageOnError "Error compressing gems"
   
-  mkdir -p $SITE_CONFIG_DIR
+  mkdir -p $RUBY_SITE_CONFIG_DIR
   exitWithMessageOnError "Error making config directory"
   
-  cp -f /tmp/gems.tgz $SITE_CONFIG_DIR
+  mv -f /tmp/gems.tgz $RUBY_SITE_CONFIG_DIR
   
   if [ "$ASSETS_PRECOMPILE" == true ]; then 
 	echo "running rake assets:precompile"
