@@ -1,6 +1,12 @@
 # Rails Helpers
 # -----------
 
+setLatestRubyVersion(){
+    # Hardcoded to 2.3.3 for now until we support more versions
+	LATEST_RUBY_VERSION=2.3.3
+	echo "Using ruby version $LATEST_RUBY_VERSION"
+}
+
 initializeDeploymentConfig() {
 	if [ -z $BUNDLE_WITHOUT ]; then 
 		echo "Bundle install with no 'without' options"; 
@@ -9,11 +15,25 @@ initializeDeploymentConfig() {
 		OPTIONS="--without $BUNDLE_WITHOUT";
 		echo "Bundle install with options $OPTIONS";
 	fi
+	
+	if [ -z $BUNDLE_INSTALL_LOCATION ]; then 
+		echo "Defaulting gem installation directory to /tmp/bundle"; 
+		BUNDLE_INSTALL_LOCATION="/tmp/bundle";
+	else 
+		echo "Gem installation directory is $BUNDLE_INSTALL_LOCATION";
+	fi
+	
+	if [ -z $SITE_CONFIG_DIR ]; then 
+		echo "Defaulting site config directory to /home/site/config"; 
+		SITE_CONFIG_DIR="/home/site/config"
+	else 
+		echo "site config directory is $SITE_CONFIG_DIR";
+	fi
+	
+	setLatestRubyVersion
 }
 
-setLatestNodeVersion(){
-	WEBSITES_LATEST_NODE_VERSION=$(rbenv install -l | grep -v - | grep 2.3 | tail -n 1);
-}
+
 
 ##################################################################################################################################
 # Deployment
@@ -38,7 +58,7 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   exitWithMessageOnError "init failed"
   
   echo "Setting ruby version"
-  rbenv global $WEBSITES_LATEST_NODE_VERSION
+  rbenv global $LATEST_RUBY_VERSION
   exitWithMessageOnError "Failed to switch ruby versions"
   
   echo "Running bundle clean"
@@ -46,18 +66,18 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   
   echo "Running bundle install"
   mkdir -p /tmp/bundle
-  bundle config --global path /tmp/bundle
-  bundle install --no-deployment
+  bundle config --global path $BUNDLE_INSTALL_LOCATION
+  bundle install --no-deployment $OPTIONS
   exitWithMessageOnError "bundler failed"
   
   echo "Zipping up bundle contents"
-  tar -zcf /tmp/gems.tgz -C /tmp/bundle .
+  tar -zcf /tmp/gems.tgz -C $BUNDLE_INSTALL_LOCATION .
   exitWithMessageOnError "Error compressing gems"
   
-  mkdir -p /home/site/config
+  mkdir -p $SITE_CONFIG_DIR
   exitWithMessageOnError "Error making config directory"
   
-  cp -f /tmp/gems.tgz /home/site/config
+  cp -f /tmp/gems.tgz $SITE_CONFIG_DIR
   
   if [ "$ASSETS_PRECOMPILE" == true ]; then 
 	echo "running rake assets:precompile"
