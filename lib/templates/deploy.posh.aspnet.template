@@ -15,5 +15,5 @@ if ($CLEAN_LOCAL_DEPLOYMENT_TEMP -eq $true) {
 }
 
 if ($MSBUILD_PATH -eq $null) {
-  $MSBUILD_PATH = "${env:ProgramFiles(x86)}\MSBuild\15.0\Bin\MSBuild.exe"
+  $MSBUILD_PATH = "${env:ProgramFiles(x86)}\MSBuild\14.0\Bin\MSBuild.exe"
 }
