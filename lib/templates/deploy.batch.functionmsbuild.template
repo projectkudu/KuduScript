@@ -1,7 +1,7 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Deployment
 :: ----------
-echo Handling function App deployment with Msbuild15.
+echo Handling function App deployment with Msbuild.
 
 :: 1. Restore nuget packages
 call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\{SolutionPath}" -MSBuildPath "%MSBUILD_15_DIR%"
