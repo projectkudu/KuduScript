@@ -18,23 +18,29 @@ function addDeploymentScriptOptions(command) {
        .option('--ruby', 'Create a deployment script for ruby website')
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
-       .option('--functionApp', 'Create a deployment script for function App')
+       .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
        .option('--basic', 'Create a deployment script for any other website')
        .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
-       .option('-s, --solutionFile [file path]', 'The solution file path (sln)')
-       .option('-p, --sitePath [directory path]', 'The path to the site being deployed (default: same as repositoryRoot)')
-       .option('-t, --scriptType [batch|bash|posh]', 'The script output type (default: batch)')
+       .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
+       .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
+       .option('-t, --scriptType <batch|bash|posh>', 'The script output type (default: batch)')
        .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
        .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
        .option('--no-dot-deployment', 'Do not generate the .deployment file.')
        .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
 }
 
+function tryOptionalInput(argument){
+    // if argument == true, means options specified, but optional input not provided
+    // if argument != true, argument itself represent the value of optional input
+    return argument === true ? undefined : argument;
+}
+
 function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore;
+  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore || tryOptionalInput(options.functionApp);
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
