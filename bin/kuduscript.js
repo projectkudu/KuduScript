@@ -31,8 +31,8 @@ function addDeploymentScriptOptions(command) {
 }
 
 function tryOptionalInput(argument){
-    // if argument == true, means options specified, but optional input not provided
-    // if argument != true, argument itself represent the value of optional input
+    // if argument == true, means option is specified, but optional input IS NOT provided
+    // if argument != true, value of its optional input is stored in argument
     return argument === true ? undefined : argument;
 }
 
