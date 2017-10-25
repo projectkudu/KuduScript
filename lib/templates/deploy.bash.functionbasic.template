@@ -1,0 +1,76 @@
+# Npm helper
+# ------------
+
+npmPath=`which npm 2> /dev/null`
+if [ -z $npmPath ]
+then
+  NPM_CMD="node \"$NPM_JS_PATH\"" # on windows server there's only npm.cmd
+else
+  NPM_CMD=npm
+fi
+
+##################################################################################################################################
+# Deployment
+# ----------
+
+echo Handling function App deployment.
+
+RunNpm() {
+    echo Restoring npm packages in $1
+
+    pushd $1 > /dev/null
+    eval $NPM_CMD install --production 2>&1
+    exitWithMessageOnError "Npm Install Failed"
+    popd > /dev/null
+}
+
+RestoreNpmPackages() {
+
+    local lookup="package.json"
+    if [ -e "$1/$lookup" ]
+    then
+      RunNpm $1
+    fi
+
+    for subDirectory in "$1"/*
+    do
+      if [ -d $subDirectory ] && [ -e "$subDirectory/$lookup" ]
+      then
+        RunNpm $subDirectory
+      fi
+    done
+}
+
+InstallFunctionExtensions() {
+    echo Installing azure function extensions from nuget
+
+    local lookup="extensions.csproj"
+    if [ -e "$1/$lookup" ]
+    then
+      pushd $1 > /dev/null
+      dotnet build -o bin
+      exitWithMessageOnError "Function extensions installation failed"
+      popd > /dev/null
+    fi
+}
+
+DeployWithoutFuncPack() {
+    echo Not using funcpack because SCM_USE_FUNCPACK is not set to 1
+
+    # 1. Install function extensions
+    InstallFunctionExtensions "$DEPLOYMENT_SOURCE{SitePath}"
+
+    # 2. KuduSync
+    if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+      "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh;obj"
+      exitWithMessageOnError "Kudu Sync failed"
+    fi
+
+    # 3. Restore npm
+    RestoreNpmPackages "$DEPLOYMENT_TARGET"
+}
+
+DeployWithoutFuncPack
+# TODO funcpack is not installed on linux machine
+
+##################################################################################################################################
