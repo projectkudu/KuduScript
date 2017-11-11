@@ -15,6 +15,7 @@ function addDeploymentScriptOptions(command) {
        .option('--aspWebSite', 'Create a deployment script for basic website')
        .option('--go', 'Create a deployment script for Go website')
        .option('--node', 'Create a deployment script for node.js website')
+      .option('--angular', 'Create a deployment script for angular website')
        .option('--ruby', 'Create a deployment script for ruby website')
        .option('--php', 'Create a deployment script for php website')
        .option('--python', 'Create a deployment script for python website')
@@ -46,7 +47,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.angular, options.ruby, options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -57,10 +58,10 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    log.help('Please specify one of these flags: --angular --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    throw new Error('Please specify only one of these flags: --angular --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
   }
 
   var projectType;
@@ -73,7 +74,9 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   }else if (options.go) {
     projectType = generator.ProjectType.go;
   } else if (options.node) {
-    projectType = generator.ProjectType.node;
+      projectType = generator.ProjectType.node;
+  } else if (options.angular) {
+    projectType = generator.ProjectType.angular;
   } else if (options.python) {
       projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
