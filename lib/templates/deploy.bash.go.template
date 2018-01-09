@@ -1,0 +1,37 @@
+
+##################################################################################################################################
+# Deployment
+# ----------
+
+echo Handling Go app deployment.
+
+APPNAME=app
+GOPATH=$DEPLOYMENT_TEMP/go
+APPPATH=$GOPATH/src/$APPNAME
+
+# 1. KuduSync
+mkdir -p $APPPATH
+"$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$APPPATH" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
+exitWithMessageOnError "Kudu Sync failed"
+
+# 2. Install dependencies
+pushd $APPPATH
+if ls *.toml >/dev/null 2>&1; then
+    dep ensure
+    exitWithMessageOnError "dep ensure failed"
+else
+    go get ./...
+    exitWithMessageOnError "go get failed"
+fi
+
+# 3. Build
+go build -o $APPNAME
+exitWithMessageOnError "go build failed"
+popd
+
+# 4. KuduSync
+"$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_TEMP" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
+exitWithMessageOnError "Kudu Sync failed"
+
+
+##################################################################################################################################

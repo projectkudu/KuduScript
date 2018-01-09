@@ -7,30 +7,30 @@ var version = require('../package.json').version;
 
 function addDeploymentScriptOptions(command) {
   command
-       .usage('[options]')
-       .description('Generate custom deployment script')
-       .option('-r, --repositoryRoot [dir path]', 'The root path for the repository (default: .)')
-       .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
-       .option('--aspNetCore <projectFilePath>', 'Create a deployment script for ASP.NET Core web application, specify the project file path') // could be project.json, xproj, csproj
-       .option('--aspWebSite', 'Create a deployment script for basic website')
-       .option('--go', 'Create a deployment script for Go website')
-       .option('--node', 'Create a deployment script for node.js website')
-       .option('--ruby', 'Create a deployment script for ruby website')
-       .option('--php', 'Create a deployment script for php website')
-       .option('--python', 'Create a deployment script for python website')
-       .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
-       .option('--basic', 'Create a deployment script for any other website')
-       .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
-       .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
-       .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
-       .option('-t, --scriptType <batch|bash|posh>', 'The script output type (default: batch)')
-       .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
-       .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
-       .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-       .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
+    .usage('[options]')
+    .description('Generate custom deployment script')
+    .option('-r, --repositoryRoot [dir path]', 'The root path for the repository (default: .)')
+    .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
+    .option('--aspNetCore <projectFilePath>', 'Create a deployment script for ASP.NET Core web application, specify the project file path') // could be project.json, xproj, csproj
+    .option('--aspWebSite', 'Create a deployment script for basic website')
+    .option('--go', 'Create a deployment script for Go website')
+    .option('--node', 'Create a deployment script for node.js website')
+    .option('--ruby', 'Create a deployment script for ruby website')
+    .option('--php', 'Create a deployment script for php website')
+    .option('--python', 'Create a deployment script for python website')
+    .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
+    .option('--basic', 'Create a deployment script for any other website')
+    .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
+    .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
+    .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
+    .option('-t, --scriptType <batch|bash|posh>', 'The script output type (default: batch)')
+    .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
+    .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
+    .option('--no-dot-deployment', 'Do not generate the .deployment file.')
+    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
 }
 
-function tryOptionalInput(argument){
+function tryOptionalInput(argument) {
   // if argument == true, means option is specified, but optional input IS NOT provided
   // if argument != true, value of its optional input is stored in argument
   return argument === true ? undefined : argument;
@@ -67,15 +67,15 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (options.aspWAP) {
     projectType = generator.ProjectType.wap;
   } else if (options.aspNetCore) {
-    projectType = generator.ProjectType.aspNetCore
+    projectType = generator.ProjectType.aspNetCore;
   } else if (options.aspWebSite) {
     projectType = generator.ProjectType.website;
-  }else if (options.go) {
+  } else if (options.go) {
     projectType = generator.ProjectType.go;
   } else if (options.node) {
     projectType = generator.ProjectType.node;
   } else if (options.python) {
-      projectType = generator.ProjectType.python;
+    projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
   } else if (options.functionApp) {
