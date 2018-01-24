@@ -31,6 +31,11 @@ suite('Kudu Script Smoke Tests', function () {
         var scriptType = ScriptType.batch;
         runScenario("--node", scriptType, done);
     });
+    test('Angular generated batch script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var scriptType = ScriptType.batch;
+        runScenario("--angular", scriptType, done);
+    });
 
     test('Python generated batch script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "app.py"), "content");
@@ -49,6 +54,11 @@ suite('Kudu Script Smoke Tests', function () {
         var scriptType = ScriptType.bash;
         runScenario("--node", scriptType, done);
     });
+    test('Angular generated bash script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var scriptType = ScriptType.bash;
+        runScenario("--angular", scriptType, done);
+    });
 
     test('PHP generated bash script runs without a failure', function (done) {
         generateFile(pathUtil.join(testDir, "composer.json"), "content");
@@ -66,6 +76,12 @@ suite('Kudu Script Smoke Tests', function () {
         generateFile(pathUtil.join(testDir, "server.js"), "content");
         var scriptType = ScriptType.posh;
         runScenario("--node", scriptType, done);
+    });
+
+    test('Angular generated posh script runs without a failure', function (done) {
+        generateFile(pathUtil.join(testDir, "server.js"), "content");
+        var scriptType = ScriptType.posh;
+        runScenario("--angular", scriptType, done);
     });
 
     setup(function () {
