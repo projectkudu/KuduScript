@@ -24,8 +24,8 @@ else
     exitWithMessageOnError "go get failed"
 fi
 
-# 3. Build
-go build -o $APPNAME
+# 3. Build ( since we are building on debian based image for an alpine image we need to compile with static linking against musl).
+CC=$(which musl-gcc) go build --ldflags '-linkmode external -extldflags "-static"' -o $APPNAME
 exitWithMessageOnError "go build failed"
 popd
 
