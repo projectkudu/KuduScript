@@ -4,7 +4,7 @@
 echo Handling function App deployment with Msbuild.
 
 :: 1. Restore nuget packages
-call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\{SolutionPath}" -MSBuildPath "%MSBUILD_15_DIR%"
+call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\{RestoreArguments}" -MSBuildPath "%MSBUILD_15_DIR%"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. Build and publish
