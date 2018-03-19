@@ -21,6 +21,7 @@ IF %ERRORLEVEL% NEQ 0 (
 setlocal enabledelayedexpansion
 
 SET ARTIFACTS=%~dp0%..\artifacts
+SET NUGETRESTORE=nuget restore -NonInteractive -MSBuildPath "%MSBUILD_15_DIR%"
 
 IF NOT DEFINED DEPLOYMENT_SOURCE (
   SET DEPLOYMENT_SOURCE=%~dp0%.
@@ -47,5 +48,3 @@ IF NOT DEFINED KUDU_SYNC_CMD (
   :: Locally just running "kuduSync" would also work
   SET KUDU_SYNC_CMD=%appdata%\npm\kuduSync.cmd
 )
-
-SET NUGETRESTORE=nuget restore -NonInteractive -MSBuildPath "%MSBUILD_15_DIR%"
