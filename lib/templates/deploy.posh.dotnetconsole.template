@@ -7,7 +7,7 @@ echo "Handling .NET Console Application deployment."
 
 # 1. Restore NuGet packages
 if (Test-Path "{SolutionPath}") {
-  nuget restore "$DEPLOYMENT_SOURCE\{SolutionPath}"
+  $NUGETRESTORE "$DEPLOYMENT_SOURCE\{SolutionPath}"
   exitWithMessageOnError "NuGet restore failed"
 }
 
