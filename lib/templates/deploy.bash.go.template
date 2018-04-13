@@ -5,9 +5,9 @@
 
 echo Handling Go app deployment.
 
-APPNAME=app
-GOPATH=$DEPLOYMENT_TEMP/go
-APPPATH=$GOPATH/src/$APPNAME
+export APPNAME=app
+export GOPATH=$DEPLOYMENT_TEMP/go
+export APPPATH=$GOPATH/src/$APPNAME
 
 # 1. KuduSync
 mkdir -p $APPPATH
