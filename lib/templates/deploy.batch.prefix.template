@@ -21,7 +21,23 @@ IF %ERRORLEVEL% NEQ 0 (
 setlocal enabledelayedexpansion
 
 SET ARTIFACTS=%~dp0%..\artifacts
-SET NUGETRESTORE=nuget restore -NonInteractive -MSBuildPath "%MSBUILD_15_DIR%"
+:: select msbuild version
+IF NOT DEFINED MSBUILD_VERSION GOTO useMsbuild15
+IF %MSBUILD_VERSION% == "15" GOTO useMsbuild15
+IF %MSBUILD_VERSION% == "14" GOTO useMsbuild14
+:: defined an invalid version
+GOTO error
+
+:useMsbuild15
+SET MSBUILD_DIR = %MSBUILD_15_DIR%
+GOTO nugetRestore
+
+:useMsbuild14
+SET MSBUILD_DIR = %MSBUILD_14_DIR%
+GOTO nugetRestore
+
+:nugetRestore
+SET NUGETRESTORE=nuget restore -NonInteractive -MSBuildPath "%MSBUILD_DIR%"
 
 IF NOT DEFINED DEPLOYMENT_SOURCE (
   SET DEPLOYMENT_SOURCE=%~dp0%.

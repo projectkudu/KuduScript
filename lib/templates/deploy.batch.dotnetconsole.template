@@ -12,7 +12,7 @@ IF /I "{SolutionPath}" NEQ "" (
 )
 
 :: 2. Build to the temporary path
-call :ExecuteCmd "%MSBUILD_15_DIR%\MSBuild.exe" {MSBuildArguments}
+call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" {MSBuildArguments}
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run web job deploy script

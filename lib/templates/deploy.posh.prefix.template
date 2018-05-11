@@ -35,7 +35,14 @@ $DEPLOYMENT_TARGET = $env:DEPLOYMENT_TARGET
 
 $NEXT_MANIFEST_PATH = $env:NEXT_MANIFEST_PATH
 $PREVIOUS_MANIFEST_PATH = $env:PREVIOUS_MANIFEST_PATH
-$NUGETRESTORE = "nuget restore -NonInteractive -MSBuildPath `"$env:MSBUILD_15_DIR`""
+if ($env:MSBUILD_VERSION -eq $null -Or $env:MSBUILD_VERSION -eq "15") {
+  $MSBUILD_DIR = $env:MSBUILD_15_DIR
+} ElseIf ($env:MSBUILD_VERSION -eq "14") {
+  $MSBUILD_DIR = $env:MSBUILD_14_DIR
+} Else {
+  exitWithMessageOnError "MSBUILD_VERSION is invalid, it needs to be either 14 or 15"
+}
+$NUGETRESTORE = "nuget restore -NonInteractive -MSBuildPath `"$MSBUILD_DIR`""
 
 if ($DEPLOYMENT_SOURCE -eq $null) {
   $DEPLOYMENT_SOURCE = $SCRIPT_DIR
