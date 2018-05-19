@@ -29,11 +29,11 @@ IF %MSBUILD_VERSION% == "14" GOTO useMsbuild14
 GOTO error
 
 :useMsbuild15
-SET MSBUILD_DIR = %MSBUILD_15_DIR%
+SET MSBUILD_DIR=%MSBUILD_15_DIR%
 GOTO nugetRestore
 
 :useMsbuild14
-SET MSBUILD_DIR = %MSBUILD_14_DIR%
+SET MSBUILD_DIR=%MSBUILD_14_DIR%
 GOTO nugetRestore
 
 :nugetRestore
