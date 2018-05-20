@@ -7,12 +7,12 @@ echo Handling .NET Console Application deployment.
 
 :: 1. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (
-  call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\{SolutionPath}" -MSBuildPath "%MSBUILD_15_DIR%"
+  call :ExecuteCmd %NUGETRESTORE% "%DEPLOYMENT_SOURCE%\{SolutionPath}" 
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
 :: 2. Build to the temporary path
-call :ExecuteCmd "%MSBUILD_15_DIR%\MSBuild.exe" {MSBuildArguments}
+call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" {MSBuildArguments}
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run web job deploy script

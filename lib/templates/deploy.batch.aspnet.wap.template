@@ -7,15 +7,15 @@ echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (
-  call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\{SolutionPath}"
+  call :ExecuteCmd %NUGETRESTORE% "%DEPLOYMENT_SOURCE%\{SolutionPath}"
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
 :: 2. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
-  call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArguments}
+  call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" {MSBuildArguments}
 ) ELSE (
-  call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArgumentsForInPlace}
+  call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" {MSBuildArgumentsForInPlace}
 )
 
 IF !ERRORLEVEL! NEQ 0 goto error

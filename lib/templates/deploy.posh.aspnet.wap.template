@@ -7,15 +7,15 @@ echo "Handling .NET Web Application deployment."
 
 # 1. Restore NuGet packages
 if (Test-Path "{SolutionPath}") {
-  nuget restore "$DEPLOYMENT_SOURCE\{SolutionPath}"
+  $NUGETRESTORE "$DEPLOYMENT_SOURCE\{SolutionPath}"
   exitWithMessageOnError "NuGet restore failed"
 }
 
 # 2. Build to the temporary path
 if ($env:IN_PLACE_DEPLOYMENT -ne "1") {
-  & "$MSBUILD_PATH" {MSBuildArguments}
+  & "$MSBUILD_DIR\MSBuild.exe" {MSBuildArguments}
 } else {
-  & "$MSBUILD_PATH" {MSBuildArgumentsForInPlace}
+  & "$MSBUILD_DIR\MSBuild.exe" {MSBuildArgumentsForInPlace}
 }
 
 exitWithMessageOnError "MSBuild failed"

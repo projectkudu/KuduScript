@@ -2,13 +2,14 @@
 :: Deployment
 :: ----------
 echo Handling function App deployment with Msbuild.
+:: only works with msbuild15
 
 :: 1. Restore nuget packages
-call :ExecuteCmd nuget.exe restore "%DEPLOYMENT_SOURCE%\{RestoreArguments}" -MSBuildPath "%MSBUILD_15_DIR%"
+call :ExecuteCmd %NUGETRESTORE% "%DEPLOYMENT_SOURCE%\{RestoreArguments}"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. Build and publish
-call :ExecuteCmd "%MSBUILD_15_DIR%\MSBuild.exe" "%DEPLOYMENT_SOURCE%\{ProjectPath}" /p:DeployOnBuild=true /p:configuration=Release /p:publishurl="%DEPLOYMENT_TEMP%" %SCM_BUILD_ARGS%
+call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" "%DEPLOYMENT_SOURCE%\{ProjectPath}" /p:DeployOnBuild=true /p:configuration=Release /p:publishurl="%DEPLOYMENT_TEMP%" %SCM_BUILD_ARGS%
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. KuduSync

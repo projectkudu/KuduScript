@@ -7,12 +7,12 @@ echo "Handling .NET Console Application deployment."
 
 # 1. Restore NuGet packages
 if (Test-Path "{SolutionPath}") {
-  nuget restore "$DEPLOYMENT_SOURCE\{SolutionPath}"
+  $NUGETRESTORE "$DEPLOYMENT_SOURCE\{SolutionPath}"
   exitWithMessageOnError "NuGet restore failed"
 }
 
 # 2. Build to the temporary path
-& "$MSBUILD_PATH" {MSBuildArguments}
+& "$MSBUILD_DIR\MSBuild.exe" {MSBuildArguments}
 exitWithMessageOnError "MSBuild failed"
 
 # 3. Run web job deploy script

@@ -6,7 +6,7 @@
 echo Handling .NET Web Site deployment.
 
 :: 1. Build to the repository path
-call :ExecuteCmd "%MSBUILD_PATH%" {MSBuildArguments}
+call :ExecuteCmd "%MSBUILD_DIR%\MSBuild.exe" {MSBuildArguments}
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. KuduSync
