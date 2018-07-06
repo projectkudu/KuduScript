@@ -1,0 +1,32 @@
+echo Python deployment.
+
+# 1. KuduSync
+
+if [[ "$IN_PLACE_DEPLOYMENT" -ne "1" ]]; then
+  "$KUDU_SYNC_CMD" -v 50 -f "$DEPLOYMENT_SOURCE{SitePath}" -t "$DEPLOYMENT_TARGET" -n "$NEXT_MANIFEST_PATH" -p "$PREVIOUS_MANIFEST_PATH" -i ".git;.hg;.deployment;deploy.sh"
+  exitWithMessageOnError "Kudu Sync failed"
+fi
+
+
+#2. Install any dependencies
+echo "$DEPLOYMENT_TARGET"
+
+echo "$DEPLOYMENT_TARGET"
+if [ -e "$DEPLOYMENT_TARGET/requirements.txt" ]; then
+  echo "Found requirements.txt"
+  cd "$DEPLOYMENT_TARGET"
+
+  #2a. Setup virtual Environment
+  echo "Create virtual environment"   
+  python3.6 -m venv antenv3.6 --copies
+
+  #2b. Activate virtual environment
+  echo "Activate virtual environment"
+  source antenv3.6/bin/activate
+  
+  #2c. Install dependencies
+  pip install -r requirements.txt
+  
+  echo "pip install finished"
+fi
+
