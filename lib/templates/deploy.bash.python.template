@@ -9,20 +9,20 @@ fi
 
 
 #2. Install any dependencies
+echo "$DEPLOYMENT_SOURCE"
 echo "$DEPLOYMENT_TARGET"
 
-echo "$DEPLOYMENT_TARGET"
 if [ -e "$DEPLOYMENT_TARGET/requirements.txt" ]; then
   echo "Found requirements.txt"
   cd "$DEPLOYMENT_TARGET"
 
   #2a. Setup virtual Environment
   echo "Create virtual environment"   
-  python3.6 -m venv antenv3.6 --copies
+  python3.7 -m venv antenv --copies
 
   #2b. Activate virtual environment
   echo "Activate virtual environment"
-  source antenv3.6/bin/activate
+  source antenv/bin/activate
   
   #2c. Install dependencies
   pip install -r requirements.txt
