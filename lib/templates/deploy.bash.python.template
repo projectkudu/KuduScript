@@ -18,6 +18,7 @@ if [ -e "$DEPLOYMENT_TARGET/requirements.txt" ]; then
 
   #2a. Setup virtual Environment
   echo "Create virtual environment"   
+
   python3.7 -m venv antenv --copies
 
   #2b. Activate virtual environment
@@ -29,4 +30,3 @@ if [ -e "$DEPLOYMENT_TARGET/requirements.txt" ]; then
   
   echo "pip install finished"
 fi
-
