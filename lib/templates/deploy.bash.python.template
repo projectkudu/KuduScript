@@ -9,24 +9,36 @@ fi
 
 
 #2. Install any dependencies
+
+export ANTENV="antenv"
+export PYTHON3="python3.7"
+
+if [ "$PYTHON_VERSION" = "3.6" ]; then
+    export ANTENV="antenv3.6"
+    export PYTHON3="python3.6"
+fi
+
 echo "$DEPLOYMENT_SOURCE"
 echo "$DEPLOYMENT_TARGET"
 
+
 if [ -e "$DEPLOYMENT_TARGET/requirements.txt" ]; then
   echo "Found requirements.txt"
+  echo "Python Virtual Environment: $ANTENV"
+  echo "Python Version: $PYTHON3"
+
   cd "$DEPLOYMENT_TARGET"
 
   #2a. Setup virtual Environment
-  echo "Create virtual environment"   
-  python3.7 -m venv antenv --copies
+  echo "Create virtual environment"
+  $PYTHON3 -m venv $ANTENV --copies
 
   #2b. Activate virtual environment
   echo "Activate virtual environment"
-  source antenv/bin/activate
-  
+  source $ANTENV/bin/activate
+
   #2c. Install dependencies
   pip install -r requirements.txt
-  
+
   echo "pip install finished"
 fi
-
