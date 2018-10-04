@@ -9,7 +9,7 @@ dotnet restore "$DEPLOYMENT_SOURCE\{RestoreArguments}"
 exitWithMessageOnError "Restore failed"
 
 # 2. Build and publish
-dotnet publish "$DEPLOYMENT_SOURCE\{DotnetpublishArguments}" --output "%DEPLOYMENT_TEMP%" --configuration Release
+dotnet publish "$DEPLOYMENT_SOURCE\{DotnetpublishArguments}" --output "$DEPLOYMENT_TEMP" --configuration Release
 exitWithMessageOnError "dotnet publish failed"
 
 # 3. KuduSync
