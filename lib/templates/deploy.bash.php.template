@@ -2,7 +2,7 @@
 # -----------
 
 initializeDeploymentConfig() {
-	if [ ! -e "$COMPOSER_ARGS" ]; then
+	if [ ! -n "$COMPOSER_ARGS" ]; then
     COMPOSER_ARGS="--no-interaction --prefer-dist --optimize-autoloader --no-progress --no-dev --verbose"
     echo "No COMPOSER_ARGS variable declared in App Settings, using the default settings"
   else
