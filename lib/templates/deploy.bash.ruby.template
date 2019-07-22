@@ -1,9 +1,12 @@
 # Rails Helpers
 # -----------
 
-setLatestRubyVersion(){
-	LATEST_RUBY_VERSION=$(ls /usr/local/.rbenv/versions | grep -v - | grep 2.3 | tail -n 1)
-	echo "Using ruby version $LATEST_RUBY_VERSION"
+setRubyVersion(){
+	if [ "$FRAMEWORK_VERSION" = "2.3" ]; then  # default to 2.3.3
+		FRAMEWORK_VERSION=2.3.3
+	fi
+	RUBY_VERSION=$(ls /usr/local/.rbenv/versions | grep -v - | grep $FRAMEWORK_VERSION | tail -n 1)
+	echo "Using ruby version $RUBY_VERSION"
 }
 
 initializeDeploymentConfig() {
@@ -29,7 +32,7 @@ initializeDeploymentConfig() {
 		echo "site config directory is $RUBY_SITE_CONFIG_DIR";
 	fi
 	
-	setLatestRubyVersion
+	setRubyVersion
 }
 
 
@@ -57,7 +60,7 @@ if [ -e "$DEPLOYMENT_TARGET/Gemfile" ]; then
   exitWithMessageOnError "init failed"
   
   echo "Setting ruby version"
-  rbenv global $LATEST_RUBY_VERSION
+  rbenv local $RUBY_VERSION
   exitWithMessageOnError "Failed to switch ruby versions"
   
   echo "Running bundle clean"
