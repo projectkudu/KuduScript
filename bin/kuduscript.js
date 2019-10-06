@@ -20,6 +20,7 @@ function addDeploymentScriptOptions(command) {
     .option('--python', 'Create a deployment script for python website')
     .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
     .option('--basic', 'Create a deployment script for any other website')
+    .option('--msbuildConsole <projectFilePath>', 'Create a deployment script for .NET console application with old-style csproj, specify the project file path')
     .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
     .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
     .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
@@ -40,13 +41,13 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore || tryOptionalInput(options.functionApp);
+  var projectFile = options.aspWAP || options.dotNetConsole || options.msbuildConsole || options.aspNetCore || tryOptionalInput(options.functionApp);
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, options.basic, options.functionApp, options.msbuildConsole, options.dotNetConsole, options.aspNetCore, options.go];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -57,10 +58,10 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --msbuildConsole, --dotNetConsole, --basic, --ruby, --functionApp or --node');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --msbuildConsole, --dotNetConsole, --basic, --ruby, --functionApp or --node');
   }
 
   var projectType;
@@ -76,6 +77,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.node;
   } else if (options.python) {
     projectType = generator.ProjectType.python;
+  } else if (options.msbuildConsole) {
+    projectType = generator.ProjectType.msbuildConsole;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
   } else if (options.functionApp) {

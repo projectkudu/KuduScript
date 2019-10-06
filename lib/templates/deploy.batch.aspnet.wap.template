@@ -3,7 +3,7 @@
 :: Deployment
 :: ----------
 
-echo Handling .NET Web Application deployment.
+echo Handling .NET Web Application deployment with old-style csproj.
 
 :: 1. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (

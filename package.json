@@ -40,7 +40,7 @@
   "readmeFilename": "README.markdown",
   "dependencies": {
     "commander": "~1.1.1",
-    "streamline": "~0.4.10"
+    "streamline": "^0.4.11"
   },
   "devDependencies": {
     "mocha": "~1.13.0",
