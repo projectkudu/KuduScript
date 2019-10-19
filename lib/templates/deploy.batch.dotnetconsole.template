@@ -5,6 +5,10 @@
 
 echo Handling .NET Console Application deployment.
 
+echo abc
+echo %MSBUILD_15_DIR%
+echo abc
+
 :: 1. Restore NuGet packages
 IF /I "{SolutionPath}" NEQ "" (
   call :ExecuteCmd nuget restore "%DEPLOYMENT_SOURCE%\{SolutionPath}" -MSBuildPath "%MSBUILD_15_DIR%"
