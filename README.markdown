@@ -8,6 +8,11 @@ Here is the workflow to make fixes and propagate them:
 - Run `npmpublish.cmd` to publish it to npm and create a tag with a new version. Check that the new version is on https://www.npmjs.com/package/kuduscript
 - Push the fix to this repo. Use `git push --follow-tags` to push the new tag
 - Go to https://github.com/Azure/azure-xplat-cli/blob/dev/package.json and send a PR to update the kuduscript reference to the new version. This will make it available in the xplat tool
+- Generate the script with
+  `npm install streamline@0.4.11;
+  "node_modules/.bin/_node" -c lib/generator._js`;
+- Change https://github.com/projectkudu/kudu/blob/master/Kudu.Services.Web/updateNodeModules.cmd to point to the new kuduscript commit. This will make Kudu use it
+- Change https://github.com/Azure-App-Service/KuduLite/blob/master/Kudu.Services.Web/updateNodeModules.sh to point to the new kuduscript commit. This will make KuduLite use it
 - Change https://github.com/projectkudu/kudu/blob/master/Kudu.Services.Web/updateNodeModules.cmd to point to the new kuduscript commit. This will make Kudu use it
 
 This project is under the benevolent umbrella of the [.NET Foundation](http://www.dotnetfoundation.org/).
