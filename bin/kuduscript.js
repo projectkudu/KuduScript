@@ -19,8 +19,10 @@ function addDeploymentScriptOptions(command) {
     .option('--php', 'Create a deployment script for php website')
     .option('--python', 'Create a deployment script for python website')
     .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
+    .option('--dotNetCoreFunctionApp <projectFilePath>', 'Create a deployment script for .Net Core function App')
     .option('--basic', 'Create a deployment script for any other website')
     .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
+    .option('--dotNetCoreConsole <projectFilePath>', 'Create a deployment script for .NET Core console application, specify the project file path')
     .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
     .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
     .option('-t, --scriptType <batch|bash|posh>', 'The script output type (default: batch)')
@@ -40,13 +42,16 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore || tryOptionalInput(options.functionApp);
+  var projectFile = options.aspWAP || options.dotNetConsole || options.dotNetCoreConsole || options.aspNetCore ||
+                    tryOptionalInput(options.functionApp) || options.dotNetCoreFunctionApp;
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, 
+                        options.basic, options.functionApp, options.dotNetCoreFunctionApp, options.dotNetConsole, 
+                        options.dotNetCoreConsole, options.aspNetCore, options.go];
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -57,10 +62,10 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --dotNetCoreConsole, --basic, --ruby, --functionApp, --dotNetCoreFunctionApp or --node');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --basic, --ruby, --functionApp or --node');
+    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --dotNetCoreConsole, --basic, --ruby, --functionApp, --dotNetCoreFunctionApp or --node');
   }
 
   var projectType;
@@ -78,8 +83,12 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
+  } else if (options.dotNetCoreConsole) {
+    projectType = generator.ProjectType.dotNetCoreConsole;
   } else if (options.functionApp) {
     projectType = generator.ProjectType.functionApp;
+  } else if (options.dotNetCoreFunctionApp) {
+    projectType = generator.ProjectType.dotNetCoreFunctionApp;
   } else if (options.ruby) {
     projectType = generator.ProjectType.ruby;
   } else if (options.php) {
