@@ -29,7 +29,8 @@ function addDeploymentScriptOptions(command) {
     .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
     .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
     .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
+    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
+    .option('--targetFramework [targetFramework]', 'target framework to use');
 }
 
 function tryOptionalInput(argument) {
@@ -48,6 +49,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
+  var targetFramework = options.targetFramework;
 
   var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, 
                         options.basic, options.functionApp, options.dotNetCoreFunctionApp, options.dotNetConsole, 
@@ -102,7 +104,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     confirmFunc = function (message, callback) { callback(undefined, true); };
   }
 
-  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, log, confirmFunc);
+  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, log, confirmFunc, targetFramework);
   scriptGenerator.generateDeploymentScript(_);
 }
 

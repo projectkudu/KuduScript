@@ -10,7 +10,7 @@ call :ExecuteCmd dotnet restore "%DEPLOYMENT_SOURCE%\{RestoreArguments}"
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 2. Build and publish
-call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\{DotnetpublishArguments}" --output "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\deployedJob" --configuration Release
+call :ExecuteCmd dotnet publish "%DEPLOYMENT_SOURCE%\{DotnetpublishArguments}" --output "%DEPLOYMENT_TEMP%\app_data\jobs\continuous\deployedJob" --configuration Release {TargetFramework}
 IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 3. Run web job deploy script
