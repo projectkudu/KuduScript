@@ -12,6 +12,7 @@ function addDeploymentScriptOptions(command) {
     .option('-r, --repositoryRoot [dir path]', 'The root path for the repository (default: .)')
     .option('--aspWAP <projectFilePath>', 'Create a deployment script for .NET web application, specify the project file path')
     .option('--aspNetCore <projectFilePath>', 'Create a deployment script for ASP.NET Core web application, specify the project file path') // could be project.json, xproj, csproj
+    .option('--aspNetCoreMSBuild16 <projectFilePath>', 'Create a deployment script for ASP.NET Core web application using MSBuild16, specify the project file path') // could be project.json, xproj, csproj
     .option('--aspWebSite', 'Create a deployment script for basic website')
     .option('--go', 'Create a deployment script for Go website')
     .option('--node', 'Create a deployment script for node.js website')
@@ -19,18 +20,17 @@ function addDeploymentScriptOptions(command) {
     .option('--php', 'Create a deployment script for php website')
     .option('--python', 'Create a deployment script for python website')
     .option('--functionApp [projectFilePath]', 'Create a deployment script for function App, specify the project file path if using msbuild')
-    .option('--dotNetCoreFunctionApp <projectFilePath>', 'Create a deployment script for .Net Core function App')
+    .option('--functionAppMSBuild16 [projectFilePath]', 'Create a deployment script for function App using MSBuild16, specify the project file path if using msbuild')
     .option('--basic', 'Create a deployment script for any other website')
     .option('--dotNetConsole <projectFilePath>', 'Create a deployment script for .NET console application, specify the project file path')
-    .option('--dotNetCoreConsole <projectFilePath>', 'Create a deployment script for .NET Core console application, specify the project file path')
+    .option('--dotNetConsoleMSBuild16 <projectFilePath>', 'Create a deployment script for .NET console application using MSBuild16, specify the project file path')
     .option('-s, --solutionFile <file path>', 'The solution file path (sln)')
     .option('-p, --sitePath <directory path>', 'The path to the site being deployed (default: same as repositoryRoot)')
     .option('-t, --scriptType <batch|bash|posh>', 'The script output type (default: batch)')
     .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
     .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
     .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
-    .option('--targetFramework [targetFramework]', 'target framework to use');
+    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
 }
 
 function tryOptionalInput(argument) {
@@ -43,17 +43,17 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var repositoryRoot = options.repositoryRoot || '.';
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
-  var projectFile = options.aspWAP || options.dotNetConsole || options.dotNetCoreConsole || options.aspNetCore ||
-                    tryOptionalInput(options.functionApp) || options.dotNetCoreFunctionApp;
+  var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore ||
+                    options.dotNetConsoleMSBuild16 || options.aspNetCoreMSBuild16 ||
+                    tryOptionalInput(options.functionApp) || tryOptionalInput(options.functionAppMSBuild16);
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
   var noSolution = options.solution === false;
-  var targetFramework = options.targetFramework;
 
-  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby, 
-                        options.basic, options.functionApp, options.dotNetCoreFunctionApp, options.dotNetConsole, 
-                        options.dotNetCoreConsole, options.aspNetCore, options.go];
+  var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby,
+                        options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go,
+                        options.functionAppMSBuild16, options.dotNetConsoleMSBuild16, options.aspNetCoreMSBuild16] ;
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -64,10 +64,12 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   if (flagCount === 0) {
     options.helpInformation();
     log.help('');
-    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --dotNetCoreConsole, --basic, --ruby, --functionApp, --dotNetCoreFunctionApp or --node');
+    log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, ' + 
+             '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --dotNetConsoleMSBuild16 or --functionAppMSBuild16');
     return;
   } else if (flagCount > 1) {
-    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, --dotNetCoreConsole, --basic, --ruby, --functionApp, --dotNetCoreFunctionApp or --node');
+    throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, ' +
+                    '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --dotNetConsoleMSBuild16 or --functionAppMSBuild16');
   }
 
   var projectType;
@@ -75,6 +77,8 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.wap;
   } else if (options.aspNetCore) {
     projectType = generator.ProjectType.aspNetCore;
+  } else if (options.aspNetCoreMSBuild16) {
+    projectType = generator.ProjectType.aspNetCoreMSBuild16;
   } else if (options.aspWebSite) {
     projectType = generator.ProjectType.website;
   } else if (options.go) {
@@ -85,12 +89,12 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.python;
   } else if (options.dotNetConsole) {
     projectType = generator.ProjectType.dotNetConsole;
-  } else if (options.dotNetCoreConsole) {
-    projectType = generator.ProjectType.dotNetCoreConsole;
+  } else if (options.dotNetConsoleMSBuild16) {
+    projectType = generator.ProjectType.dotNetConsoleMSBuild16;
   } else if (options.functionApp) {
     projectType = generator.ProjectType.functionApp;
-  } else if (options.dotNetCoreFunctionApp) {
-    projectType = generator.ProjectType.dotNetCoreFunctionApp;
+  } else if (options.functionAppMSBuild16) {
+    projectType = generator.ProjectType.functionAppMSBuild16;
   } else if (options.ruby) {
     projectType = generator.ProjectType.ruby;
   } else if (options.php) {
@@ -104,7 +108,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     confirmFunc = function (message, callback) { callback(undefined, true); };
   }
 
-  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, log, confirmFunc, targetFramework);
+  var scriptGenerator = new generator.ScriptGenerator(repositoryRoot, projectType, projectFile, solutionFile, sitePath, scriptType, outputPath, noDotDeployment, noSolution, log, confirmFunc);
   scriptGenerator.generateDeploymentScript(_);
 }
 
