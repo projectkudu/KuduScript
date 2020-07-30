@@ -1,0 +1,20 @@
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
+
+echo Handling .NET Console Application deployment with MSBuild16.7.0.
+
+:: 1. Build to the temporary path
+call :ExecuteCmd "%MSBUILD_1670_DIR%\MSBuild.exe" /restore {MSBuildArguments}
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 2. Run web job deploy script
+IF DEFINED WEBJOBS_DEPLOY_CMD (
+  call :ExecuteCmd "%WEBJOBS_DEPLOY_CMD%"
+)
+
+:: 3. KuduSync
+call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_TEMP%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

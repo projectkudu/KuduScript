@@ -30,8 +30,11 @@ function addDeploymentScriptOptions(command) {
     .option('-o, --outputPath <output path>', 'The path to output generated script (default: same as repository root)')
     .option('-y, --suppressPrompt', 'Suppresses prompting to confirm you want to overwrite an existing destination file.')
     .option('--no-dot-deployment', 'Do not generate the .deployment file.')
-    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).');
-}
+    .option('--no-solution', 'Do not require a solution file path (only for --aspWAP otherwise ignored).')
+    .option('--aspNetCoreMSBuild1607 <projectFilePath>', 'Create a deployment script for ASP.NET Core web application using MSBuild16.7.0, specify the project file path') // could be project.json, xproj, csproj;
+    .option('--dotNetConsoleMSBuild1607 <projectFilePath>', 'Create a deployment script for .NET console application using MSBuild16.7.0, specify the project file path')
+    .option('--functionAppMSBuild1607 [projectFilePath]', 'Create a deployment script for function App using MSBuild16.7.0, specify the project file path if using msbuild')
+  }
 
 function tryOptionalInput(argument) {
   // if argument == true, means option is specified, but optional input IS NOT provided
@@ -44,8 +47,9 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var outputPath = options.outputPath || repositoryRoot;
   var scriptType = options.scriptType;
   var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore ||
-                    options.dotNetConsoleMSBuild16 || options.aspNetCoreMSBuild16 ||
-                    tryOptionalInput(options.functionApp) || tryOptionalInput(options.functionAppMSBuild16);
+                    options.dotNetConsoleMSBuild16 || options.aspNetCoreMSBuild16 || options.aspNetCoreMSBuild1607 ||
+                    options.dotNetConsoleMSBuild1607
+                    tryOptionalInput(options.functionApp) || tryOptionalInput(options.functionAppMSBuild16) || tryOptionalInput(options.functionAppMSBuild1607);
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
@@ -53,7 +57,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
 
   var exclusionFlags = [options.aspWAP, options.php, options.python, options.aspWebSite, options.node, options.ruby,
                         options.basic, options.functionApp, options.dotNetConsole, options.aspNetCore, options.go,
-                        options.functionAppMSBuild16, options.dotNetConsoleMSBuild16, options.aspNetCoreMSBuild16] ;
+                        options.functionAppMSBuild16, options.functionAppMSBuild1607, options.dotNetConsoleMSBuild16, options.dotNetConsoleMSBuild1607, options.aspNetCoreMSBuild16, options.aspNetCoreMSBuild1607] ;
   var flagCount = 0;
   for (var i in exclusionFlags) {
     if (exclusionFlags[i]) {
@@ -65,11 +69,11 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     options.helpInformation();
     log.help('');
     log.help('Please specify one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, ' + 
-             '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --dotNetConsoleMSBuild16 or --functionAppMSBuild16');
+             '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --aspNetCoreMSBuild1607, --dotNetConsoleMSBuild16, --dotNetConsoleMSBuild1607, --functionAppMSBuild1607 or --functionAppMSBuild16');
     return;
   } else if (flagCount > 1) {
     throw new Error('Please specify only one of these flags: --aspWAP, --aspNetCore, --aspWebSite, --php, --python, --dotNetConsole, ' +
-                    '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --dotNetConsoleMSBuild16 or --functionAppMSBuild16');
+                    '--basic, --ruby, --functionApp, --node, --aspNetCoreMSBuild16, --aspNetCoreMSBuild1607, --dotNetConsoleMSBuild16, --dotNetConsoleMSBuild1607, --functionAppMSBuild1607 or --functionAppMSBuild16');
   }
 
   var projectType;
@@ -79,7 +83,9 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.aspNetCore;
   } else if (options.aspNetCoreMSBuild16) {
     projectType = generator.ProjectType.aspNetCoreMSBuild16;
-  } else if (options.aspWebSite) {
+  } else if(options.aspNetCoreMSBuild1607){
+    projectType = generator.ProjectType.aspNetCoreMSBuild1607;
+  }  else if (options.aspWebSite) {
     projectType = generator.ProjectType.website;
   } else if (options.go) {
     projectType = generator.ProjectType.go;
@@ -91,10 +97,14 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
     projectType = generator.ProjectType.dotNetConsole;
   } else if (options.dotNetConsoleMSBuild16) {
     projectType = generator.ProjectType.dotNetConsoleMSBuild16;
+  } else if (options.dotNetConsoleMSBuild1607) {
+    projectType = generator.ProjectType.dotNetConsoleMSBuild1607;
   } else if (options.functionApp) {
     projectType = generator.ProjectType.functionApp;
   } else if (options.functionAppMSBuild16) {
     projectType = generator.ProjectType.functionAppMSBuild16;
+  } else if (options.functionAppMSBuild1607) {
+    projectType = generator.ProjectType.functionAppMSBuild1607;
   } else if (options.ruby) {
     projectType = generator.ProjectType.ruby;
   } else if (options.php) {
