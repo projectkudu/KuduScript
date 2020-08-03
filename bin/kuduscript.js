@@ -48,8 +48,7 @@ function deploymentScriptExecute(name, options, log, confirm, _) {
   var scriptType = options.scriptType;
   var projectFile = options.aspWAP || options.dotNetConsole || options.aspNetCore ||
                     options.dotNetConsoleMSBuild16 || options.aspNetCoreMSBuild16 || options.aspNetCoreMSBuild1607 ||
-                    options.dotNetConsoleMSBuild1607
-                    tryOptionalInput(options.functionApp) || tryOptionalInput(options.functionAppMSBuild16) || tryOptionalInput(options.functionAppMSBuild1607);
+                    options.dotNetConsoleMSBuild1607 || tryOptionalInput(options.functionApp) || tryOptionalInput(options.functionAppMSBuild16) || tryOptionalInput(options.functionAppMSBuild1607);
   var solutionFile = options.solutionFile;
   var sitePath = options.sitePath || repositoryRoot;
   var noDotDeployment = options.dotDeployment === false;
